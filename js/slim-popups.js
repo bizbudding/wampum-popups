@@ -5,36 +5,35 @@
 	'use strict';
 
 	// Add class to the popup wrap
-	$( '#slim-popups' ).addClass( 'slim-' + slim_popups_vars.style );
+	$( '#slim-popups' ).addClass( 'slim-' + slim_popups_vars.slimpopups.style );
 
-	var aggressive = false;
-	if ( slim_popups_vars.type == 'timed' ) {
-		aggressive = true;
+	// Set the popup object
+	var _ouibounce = ouibounce($('#slim-popups')[0]);
+
+	// Loop through the properties
+	for ( var prop in slim_popups_vars.ouibounce ) {
+	    if ( slim_popups_vars.ouibounce.hasOwnProperty( prop ) ) {
+	       _ouibounce[prop] = slim_popups_vars.ouibounce[prop];
+	    }
 	}
 
-	var _ouibounce = ouibounce($('#slim-popups')[0], {
-		aggressive: aggressive,
-		callback: slim_popups_vars.callback,
-		cookiedomain: slim_popups_vars.cookiedomain,
-		cookieexpire: slim_popups_vars.cookieexpire,
-		cookiename: slim_popups_vars.cookiename,
-		delay: slim_popups_vars.delay,
-		sensitivity: slim_popups_vars.sensitivity,
-		sitewide: slim_popups_vars.sitewide,
-		timer: slim_popups_vars.timer,
-	});
+	// If timed, force firing of popup
+	if ( slim_popups_vars.slimpopups.type == 'timed' ) {
 
-	if ( slim_popups_vars.type == 'timed' ) {
+		_ouibounce.aggressive = true,
+
 		setTimeout(function() {
 			_ouibounce.fire();
 			_ouibounce.disable();
-		}, slim_popups_vars.time );
+		}, slim_popups_vars.slimpopups.time );
 	}
 
+	// Close if clicking outside the popup
 	$('body').on('click', function() {
 		$('#slim-popups').hide();
 	});
 
+	// Close if clicking the close button
 	$('.slim-popups-close').on( 'click', 'a', function() {
 		$('#slim-popups').hide();
 	});
