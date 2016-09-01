@@ -8,7 +8,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:        Slim Popups
- * Description: 	   A lightweight popups plugin utilizing on oiubounce and/or magnific popups scripts
+ * Description: 	   A lightweight developer-based popups plugin utilizing on oiubounce
  * Plugin URI:         TBD
  * Author:             Mike Hemberger
  * Author URI:         http://bizbudding.com
