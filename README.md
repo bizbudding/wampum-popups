@@ -8,6 +8,7 @@ A lightweight developer-based popups plugin utilizing on oiubounce.
 1. Create a directory in your theme called /slim-popups/
 1. Include one or more files with your popup content
 1. File location is /child-theme-name/slim-popups/my-file-name.php
+1. Use CSS to style your content any way you'd like
 1. Use the template tag/function in anywhere before or in wp_footer, to ensure js file has time to load
 
 ```
