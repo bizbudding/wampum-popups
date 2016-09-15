@@ -10,7 +10,7 @@
 slim_popup( 'main-popup' );
 
 * This example shows the function with its' default settings
-
+```
 $options = array(
 	'css'  			=> true, 	// whether or not to load the stylesheet
 	'style'			=> 'modal', // 'modal' or 'slideup'
@@ -18,3 +18,17 @@ $options = array(
 	'type' 			=> 'exit',  // 'exit' or 'timed'
 );
 slim_popup( 'main-popup', $options );
+```
+
+* This example shows the ability to use multiple/different popups on the same site. (Please don't be annoying!)
+```
+$options = array(
+	'css'  			=> true, 	// whether or not to load the stylesheet
+	'style'			=> 'slide', // 'modal' or 'slideup'
+	'time'			=> '4000',  // time in milliseconds
+	'type' 			=> 'timed', // 'exit' or 'timed'
+);
+slim_popup( 'main-popup', $options, array(
+	'cookieName' 	=> 'customCookieName_2',
+) );
+```
