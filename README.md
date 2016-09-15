@@ -27,12 +27,13 @@ slim_popup( 'my-file-name', $options );
 
 ```
 $options = array(
-	'css'  	=> true, 		// whether or not to load the stylesheet
+	'css'	=> true, 		// whether or not to load the stylesheet
 	'style'	=> 'slideup', 	// 'modal' or 'slideup'
 	'time'	=> '4000',  	// time in milliseconds
-	'type' 	=> 'timed', 	// 'exit' or 'timed'
+	'type'	=> 'exit',  	// 'exit' or 'timed'
 );
-slim_popup( 'my-file-name', $options, array(
-	'cookieName' => 'myCategoryPopup',
-) );
+$args = array(
+	'cookieName' => 'customCookieName_2',
+);
+slim_popup( 'main-popup', $options, $args );
 ```
