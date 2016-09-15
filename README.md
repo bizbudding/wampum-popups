@@ -4,6 +4,10 @@ A lightweight developer-based popups plugin utilizing on oiubounce.
 * Various options allow fine-tuning
 * Content template system allows clean and efficient loading of popup content
 
+![Slim Popups modal example](assets/slim-popups-modal.png)
+
+![Slim Popups slideup example](assets/slim-popups-slideup.png)
+
 ## Basic Usage
 1. Create a directory in your theme called /slim-popups/
 1. Include one or more files with your popup content
