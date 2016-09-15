@@ -1,4 +1,8 @@
 # Slim Popups
+A lightweight developer-based popups plugin utilizing on oiubounce.
+- Use a simple function to create 1 or more popups (or slideups) throughout your website
+- Various options allow fine-tuning
+- Content template system allows clean and efficient loading of popup content
 
 ## Basic Usage
 * Create a directory in your theme called /slim-popups/
