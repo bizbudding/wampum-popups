@@ -9,14 +9,14 @@
  * @wordpress-plugin
  * Plugin Name:        Slim Popups
  * Description: 	   A lightweight developer-based popups plugin utilizing on oiubounce
- * Plugin URI:         TBD
+ * Plugin URI:         https://github.com/JiveDig/slim-popups
  * Author:             Mike Hemberger
  * Author URI:         http://bizbudding.com
- * Text Domain:        wampum
+ * Text Domain:        slim-popups
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
  * Version:            1.0.0
- * GitHub Plugin URI:  TBD
+ * GitHub Plugin URI:  https://github.com/JiveDig/slim-popups
  * GitHub Branch:	   master
  */
 
