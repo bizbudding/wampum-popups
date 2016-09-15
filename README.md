@@ -1,6 +1,5 @@
 # Slim Popups
 ===================
-
 ## Basic Usage
 * Create a directory in your theme called /slim-popups/
 * Include one or more files with your popup content
