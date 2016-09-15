@@ -43,7 +43,7 @@ $options = array(
 $args = array(
 	'cookieName' => 'customCookieName_2',
 );
-slim_popup( 'main-popup', $options, $args );
+slim_popup( 'my-file-name', $options, $args );
 ```
 
 ## Full example
@@ -64,6 +64,6 @@ function prefix_do_slim_popup() {
 	$args = array(
     	'cookieName' => 'prefixCustomCookiePosts',
 	);
-    slim_popup( 'main-popup', $options, $args );
+    slim_popup( 'my-file-name', $options, $args );
 }
 ```
