@@ -1,4 +1,4 @@
-# Slim Popups Usage
+# Slim Popups
 ===================
 
 ## Basic Usage
@@ -15,10 +15,10 @@ slim_popup( 'my-file-name' );
 
 ```
 $options = array(
-	'css'  			=> true, 	// whether or not to load the stylesheet
-	'style'			=> 'modal', // 'modal' or 'slideup'
-	'time'			=> '4000',  // time in milliseconds
-	'type' 			=> 'exit',  // 'exit' or 'timed'
+	'css'  	=> true, 	// whether or not to load the stylesheet
+	'style'	=> 'modal', // 'modal' or 'slideup'
+	'time'	=> '4000',  // time in milliseconds
+	'type' 	=> 'exit',  // 'exit' or 'timed'
 );
 slim_popup( 'my-file-name', $options );
 ```
@@ -27,10 +27,10 @@ slim_popup( 'my-file-name', $options );
 
 ```
 $options = array(
-	'css'  			=> true, 	// whether or not to load the stylesheet
-	'style'			=> 'slide', // 'modal' or 'slideup'
-	'time'			=> '4000',  // time in milliseconds
-	'type' 			=> 'timed', // 'exit' or 'timed'
+	'css'  	=> true, 		// whether or not to load the stylesheet
+	'style'	=> 'slideup', 	// 'modal' or 'slideup'
+	'time'	=> '4000',  	// time in milliseconds
+	'type' 	=> 'timed', 	// 'exit' or 'timed'
 );
 slim_popup( 'my-file-name', $options, array(
 	'cookieName' => 'myCategoryPopup',
