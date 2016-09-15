@@ -27,6 +27,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Main function to create a popup
  *
+ * Basic usage - Popup content in child theme: /child-theme-name/slim-popups/main-popup.php
+ * slim_popup( 'main-popup' );
+ *
+ * Showing default settings
+ * $options = array(
+ * 		'css'  			=> true, 	// whether or not to load the stylesheet
+ *		'style'			=> 'modal', // 'modal' or 'slideup'
+ *		'time'			=> '4000',  // time in milliseconds
+ *		'type' 			=> 'exit',  // 'exit' or 'timed'
+ * );
+ * slim_popup( 'main-popup', $options );
+ *
  * @since  1.0.0
  *
  * @param  string  $filename  File name (one word, no hyphens or underscores)
@@ -188,16 +200,17 @@ final class Slim_Popups_Setup {
 	 * @return null
 	 */
 	function register_scripts() {
-		wp_register_script( 'ouibounce',  		 SLIM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', 			 array(), 			'0.0.12', 			  true );
-		// wp_register_script( 'magnific',   		 SLIM_POPUPS_PLUGIN_URL . 'js/jquery.magnific-popup.min.js', array(), 			'1.1.0',  			  true );
-		// wp_register_script( 'slim-popups-exit',  SLIM_POPUPS_PLUGIN_URL . 'js/slim-popups-exit.js',	 	  	 array('ouibounce'), SLIM_POPUPS_VERSION, true );
-		// wp_register_script( 'slim-popups-timed', SLIM_POPUPS_PLUGIN_URL . 'js/slim-popups-timed.js',	 	 array('magnific'),  SLIM_POPUPS_VERSION, true );
-		wp_register_script( 'slim-popups', 		 SLIM_POPUPS_PLUGIN_URL . 'js/slim-popups.js',	 	 		 array('ouibounce'),  SLIM_POPUPS_VERSION, true );
-		// wp_enqueue_script( 'ouibounce',  SLIM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array('jquery'), 	 '0.0.12', 			 true );
-		// wp_enqueue_script( 'slim-popups', SLIM_POPUPS_PLUGIN_URL . 'js/slim-popups.js',	 array('ouibounce'), SLIM_POPUPS_VERSION, true );
+		wp_register_script( 'ouibounce', 	SLIM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array(), 			'0.0.12', 			  true );
+		wp_register_script( 'slim-popups', 	SLIM_POPUPS_PLUGIN_URL . 'js/slim-popups.js', 	array('ouibounce'),  SLIM_POPUPS_VERSION, true );
 	}
 
 	function slim_popup( $filename, $options = array(), $args = array() ) {
+
+		// Bail if no template (last parameter is whether or not to $load)
+		$template = Slim_Popups()->templates->get_template_part( $filename, null, false );
+		if ( ! $template ) {
+			return;
+		}
 
 		// Popup options
 		$defaults = array(
@@ -221,11 +234,12 @@ final class Slim_Popups_Setup {
 			echo '<div class="slim-popups-underlay"></div>';
 			echo '<div class="slim-popups-overlay">';
 				echo '<div class="slim-popup">';
-				echo '<div class="slim-popups-close"><button>×<span class="screen-reader-text">Close Popup</span></button></div>';
+					echo '<div class="slim-popups-close"><button>×<span class="screen-reader-text">Close Popup</span></button></div>';
 					echo '<div class="slim-popups-content">';
 					    Slim_Popups()->templates->get_template_part( $filename, null, true );
 					echo '</div>';
 				echo '</div>';
+			echo '</div>';
 		echo '</div>';
 	}
 
@@ -239,7 +253,7 @@ final class Slim_Popups_Setup {
 
 	function ouibounce_args( $args ) {
 		// Script defaults
-		$args = array(
+		$defaults = array(
 			'aggressive'	=> false,   // true
 			'callback'		=> false,   // function() { console.log('slim popups fired!'); }
 			'cookieexpire'	=> false,   // 7
@@ -250,7 +264,7 @@ final class Slim_Popups_Setup {
 			'sitewide'		=> false,   // true
 			'timer'			=> false,   // 10
 		);
-		$args  = wp_parse_args( $args, $args );
+		$args  = wp_parse_args( $args, $defaults );
 		$array = array();
 		foreach ( $args as $key => $value ) {
 			if ( $value == false ) {
