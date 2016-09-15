@@ -261,7 +261,7 @@ final class Slim_Popups_Setup {
 			'cookiename'	=> false,   // 'customCookieName'
 			'delay'			=> false,   // 100
 			'sensitivity'	=> false,   // 40
-			'sitewide'		=> false,   // true
+			'sitewide'		=> true,    // true (don't be annoying)
 			'timer'			=> false,   // 10
 		);
 		$args  = wp_parse_args( $args, $defaults );
