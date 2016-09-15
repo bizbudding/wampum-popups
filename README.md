@@ -45,3 +45,25 @@ $args = array(
 );
 slim_popup( 'main-popup', $options, $args );
 ```
+
+## Full example
+
+```
+add_action( 'wp_footer', 'prefix_do_slim_popup' );
+function prefix_do_slim_popup() {
+	// Bail if not a single post
+	if ( ! is_singular('post') ) {
+		return;
+	}
+	$options = array(
+		'css'	=> true, 		// whether or not to load the stylesheet
+		'style'	=> 'modal', 	// 'modal' or 'slideup'
+		'time'	=> '4000',  	// time in milliseconds
+		'type'	=> 'exit',  	// 'exit' or 'timed'
+	);
+	$args = array(
+    	'cookieName' => 'prefixCustomCookiePosts',
+	);
+    slim_popup( 'main-popup', $options, $args );
+}
+```
