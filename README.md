@@ -1,8 +1,9 @@
 # Slim Popups
-A lightweight developer-based popups plugin utilizing on oiubounce.
+A lightweight developer-based popups plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
 * Use a simple function to create 1 or more popups (or slideups) throughout your website
 * Various options allow fine-tuning
 * Content template system allows clean and efficient loading of popup content
+
 
 ![Slim Popups modal example](assets/slim-popups-modal.png)
 
@@ -14,6 +15,7 @@ A lightweight developer-based popups plugin utilizing on oiubounce.
 1. File location is /child-theme-name/slim-popups/my-file-name.php
 1. Use CSS to style your content any way you'd like
 1. Use the template tag/function in anywhere before or in wp_footer, to ensure js file has time to load
+1. Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
 
 ```
 slim_popup( 'my-file-name' );
