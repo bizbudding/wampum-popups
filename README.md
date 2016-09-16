@@ -37,10 +37,9 @@ slim_popup( 'my-file-name', $options );
 
 ```
 $options = array(
-	'css'	=> true, 		// whether or not to load the stylesheet
 	'style'	=> 'slideup', 	// 'modal' or 'slideup'
 	'time'	=> '4000',  	// time in milliseconds
-	'type'	=> 'exit',  	// 'exit' or 'timed'
+	'type'	=> 'timed',  	// 'exit' or 'timed'
 );
 $args = array(
 	'cookieName' => 'customCookieName_2',
@@ -53,15 +52,17 @@ slim_popup( 'my-file-name', $options, $args );
 ```
 add_action( 'wp_footer', 'prefix_do_slim_popup' );
 function prefix_do_slim_popup() {
+	// Bail if Slim Popups is not active
+	if ( ! function_exists('slim_popup') ) {
+		return;
+	}
 	// Bail if not a single post
 	if ( ! is_singular('post') ) {
 		return;
 	}
 	$options = array(
-		'css'	=> true, 		// whether or not to load the stylesheet
-		'style'	=> 'modal', 	// 'modal' or 'slideup'
-		'time'	=> '4000',  	// time in milliseconds
-		'type'	=> 'exit',  	// 'exit' or 'timed'
+		'style'	=> 'modal',
+		'type'	=> 'exit',
 	);
 	$args = array(
     	'cookieName' => 'prefixCustomCookiePosts',

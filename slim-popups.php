@@ -258,7 +258,7 @@ final class Slim_Popups_Setup {
 			'callback'		=> false,   // function() { console.log('slim popups fired!'); }
 			'cookieexpire'	=> false,   // 7
 			'cookiedomain'	=> false,   // .example.com
-			'cookiename'	=> false,   // 'customCookieName'
+			'cookiename'	=> false,   // 'custom_cookie_name'
 			'delay'			=> false,   // 100
 			'sensitivity'	=> false,   // 40
 			'sitewide'		=> true,    // true (don't be annoying)

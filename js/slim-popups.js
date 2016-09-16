@@ -19,11 +19,8 @@
 	}
 
 	if ( slim_popups_vars.slimpopups.type == 'exit' ) {
-
 		// Set the popup object
-		// var _ouibounce = ouibounce($('#slim-popups')[0]);
 		ouibounce( $('#slim-popups')[0], options );
-
 	}
 
 	// If timed, force firing of popup
@@ -39,14 +36,22 @@
 		}, slim_popups_vars.slimpopups.time );
 	}
 
-	// Close if clicking outside the popup
-	$('body').on('click', function() {
+	// Close if clicking the close button
+	$('.slim-popups-close').on( 'click', 'button', function() {
 		$('#slim-popups').hide();
 	});
 
-	// Close if clicking the close button
-	$('.slim-popups-close').on( 'click', 'a', function() {
-		$('#slim-popups').hide();
-	});
+    // Close popup listener
+    $('body').mouseup(function(e){
+        // Set our popup as a variable
+        var popup = $('.slim-popup');
+        /**
+         * If click is not on our popup
+         * If click is not on a child of our popup
+         */
+        if ( ! $(this).parents().hasClass('slim-popup') && ! popup.has(e.target).length ) {
+            $('#slim-popups').hide();
+        }
+    });
 
 })( this, jQuery );
