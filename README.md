@@ -1,9 +1,9 @@
 # Slim Popups
-A lightweight developer-based popups plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
+A lightweight developer-based popups WordPress plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
 * Use a simple function to create 1 or more popups (or slideups) throughout your website
 * Various options allow fine-tuning
 * Content template system allows clean and efficient loading of popup content
-
+* Easy plugin updates in the WordPress Dashboard via [GitHub Updater plugin](https://github.com/afragen/github-updater)
 
 ![Slim Popups modal example](assets/slim-popups-modal.png)
 

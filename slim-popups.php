@@ -234,8 +234,8 @@ final class Slim_Popups_Setup {
 			echo '<div class="slim-popups-underlay"></div>';
 			echo '<div class="slim-popups-overlay">';
 				echo '<div class="slim-popup">';
-					echo '<div class="slim-popups-close"><button>×<span class="screen-reader-text">Close Popup</span></button></div>';
-					echo '<div class="slim-popups-content">';
+					echo '<div class="slim-popup-close"><button>×<span class="screen-reader-text">Close Popup</span></button></div>';
+					echo '<div class="slim-popup-content">';
 					    Slim_Popups()->templates->get_template_part( $filename, null, true );
 					echo '</div>';
 				echo '</div>';

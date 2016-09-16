@@ -20,19 +20,19 @@
     animation: fadein 0.5s;
 }
 
-.slim-popups-content {
+.slim-popup-content {
     max-height: calc(100vh - 0px);
     overflow-y: auto;
     padding: 30px;
 }
 
-.slim-popups-close {
+.slim-popup-close {
     position: absolute;
     top: 0;
     right: 0;
 }
 
-.slim-popups-close button {
+.slim-popup-close button {
     background-color: transparent;
     color: #333;
     font-family: Arial;
@@ -50,7 +50,7 @@
     opacity: 0.65;
 }
 
-.slim-popups-close button:hover {
+.slim-popup-close button:hover {
     opacity: 1;
 }
 

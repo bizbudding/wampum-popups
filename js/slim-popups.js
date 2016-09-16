@@ -37,7 +37,7 @@
 	}
 
 	// Close if clicking the close button
-	$('.slim-popups-close').on( 'click', 'button', function() {
+	$('.slim-popup-close').on( 'click', 'button', function() {
 		$('#slim-popups').hide();
 	});
 
