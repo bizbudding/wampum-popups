@@ -193,7 +193,7 @@ final class Slim_Popups_Setup {
 	/**
 	 * Register scripts for later use
 	 *
-	 * Use via wp_enqueue_script('magnific-popups'); in a template
+	 * Use via wp_enqueue_script('slim-popups'); in a template
 	 *
 	 * @since  1.0.0
 	 *
