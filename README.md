@@ -7,7 +7,7 @@ A lightweight developer-based popups WordPress plugin utilizing [oiubounce](http
 
 ![Slim Popups modal example](assets/slim-popups-modal.png)
 
-![Slim Popups slideup example](assets/slim-popups-slideup.png)
+![Slim Popups slideup example](assets/slim-popups-slideup.jpg)
 
 ## Basic Usage
 1. Create a directory in your theme called /slim-popups/
