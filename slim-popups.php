@@ -15,7 +15,7 @@
  * Text Domain:        slim-popups
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
- * Version:            1.0.1
+ * Version:            1.0.2
  * GitHub Plugin URI:  https://github.com/JiveDig/slim-popups
  * GitHub Branch:	   master
  */
@@ -124,7 +124,7 @@ final class Slim_Popups_Setup {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'SLIM_POPUPS_VERSION' ) ) {
-			define( 'SLIM_POPUPS_VERSION', '1.0.1' );
+			define( 'SLIM_POPUPS_VERSION', '1.0.2' );
 		}
 		// Plugin Folder Path.
 		if ( ! defined( 'SLIM_POPUPS_PLUGIN_DIR' ) ) {
@@ -231,7 +231,6 @@ final class Slim_Popups_Setup {
 		}
 
 		echo '<div id="slim-popups" style="display:none;">';
-			echo '<div class="slim-popups-underlay"></div>';
 			echo '<div class="slim-popups-overlay">';
 				echo '<div class="slim-popup">';
 					echo '<div class="slim-popup-close"><button>×<span class="screen-reader-text">Close Popup</span></button></div>';
