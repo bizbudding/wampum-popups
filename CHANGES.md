@@ -1,3 +1,6 @@
+#### 1.1.0
+* Convert name to match wampum plugin suite
+
 #### 1.0.2
 * CSS tweaks to better handle popups with a lot of content
 
