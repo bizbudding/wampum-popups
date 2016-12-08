@@ -249,7 +249,7 @@ final class Wampum_Popups_Setup {
 			echo '<div class="wampum-popup-overlay' . $close_outside . '">';
 				echo '<div class="wampum-popup-content" style="max-width:' . $options['width'] . 'px;">';
 					if ( filter_var( $options['close_button'], FILTER_VALIDATE_BOOLEAN ) ) {
-						echo '<div class="wampum-popup-close"><button>×<span class="screen-reader-text">Close Popup</span></button></div>';
+						echo '<button class="wampum-popup-close">×<span class="screen-reader-text">Close Popup</span></button>';
 					}
 				    echo $content;
 				echo '</div>';

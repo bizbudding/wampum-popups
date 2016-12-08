@@ -57,7 +57,17 @@ Full Screen Overlay/Underlay/Popup
     opacity: 0.65;
 }
 
+.wampum-popup-close:focus {
+    outline: none;
+    box-shadow: none;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
 .wampum-popup-close:hover {
+    background-color: transparent;
+    color: #333;
     opacity: 1;
 }
 

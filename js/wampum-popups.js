@@ -36,8 +36,10 @@
 		}, wampum_popups_vars.wampumpopups.time );
 	}
 
+	// TODO: If slideup, when closing slide back down
+
 	// Close if clicking the close button
-	$('.wampum-popup-close').on( 'click', 'button', function() {
+	$('.wampum-popup-close').on( 'click', $(this), function() {
 		$('.wampum-popup').hide();
 	});
 
