@@ -64,7 +64,10 @@
 		// Close if clicking the close button
 		$( popup ).on( 'click', '.wampum-popup-close', function() {
 			popup.fadeOut('fast');
-			_ouibounce.disable();
+			// Disable ouibounce object if it was set
+			if ( typeof _ouibounce != 'undefined' ) {
+				_ouibounce.disable();
+			}
 		});
 
 		if ( popup_vars.close_outside ) {
@@ -79,7 +82,10 @@
 		         */
 		        if ( ! $(this).parents().hasClass('wampum-popup-content') && ! content.has(e.target).length ) {
 		            popup.fadeOut('fast');
-		            _ouibounce.disable();
+		            // Disable ouibounce object if it was set
+					if ( typeof _ouibounce != 'undefined' ) {
+						_ouibounce.disable();
+					}
 		        }
 		    });
 
