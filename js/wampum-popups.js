@@ -26,14 +26,22 @@
 	// If timed, force firing of popup
 	if ( wampum_popups_vars.wampumpopups.type == 'timed' ) {
 
+		/**
+		 * Force cookie name if aggressive mode is used
+		 * This prevents a cookie being set that may be used elsewhere for timed/exit popup
+		 */
+		options['cookieName'] = 'wampumpopupAggressive';
+
 		var _ouibounce = ouibounce( $('.wampum-popup')[0], options );
 
-		_ouibounce.aggressive = true,
+		_ouibounce.aggressive = true;
 
+		// Force fire after given time
 		setTimeout(function() {
 			_ouibounce.fire();
 			_ouibounce.disable();
 		}, wampum_popups_vars.wampumpopups.time );
+
 	}
 
 	// TODO: If slideup, when closing slide back down
@@ -45,7 +53,6 @@
 
 
 	if ( wampum_popups_vars.wampumpopups.close_outside ) {
-	console.log(wampum_popups_vars.wampumpopups.close_outside);
 
 	    // Close popup listener
 	    $('body').mouseup(function(e){

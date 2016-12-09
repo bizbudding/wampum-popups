@@ -271,18 +271,18 @@ final class Wampum_Popups_Setup {
 		$defaults = array(
 			'aggressive'	=> false,   // true
 			'callback'		=> false,   // function() { console.log('slim popups fired!'); }
-			'cookieexpire'	=> false,   // 7
-			'cookiedomain'	=> false,   // .example.com
-			'cookiename'	=> false,   // 'custom_cookie_name'
+			'cookieExpire'	=> false,   // 7
+			'cookieDomain'	=> false,   // .example.com
+			'cookieName'	=> false,   // 'custom_cookie_name'
 			'delay'			=> false,   // 100
 			'sensitivity'	=> false,   // 40
 			'sitewide'		=> true,    // true (don't be annoying)
 			'timer'			=> false,   // 10
 		);
-		$args  = wp_parse_args( $args, $defaults );
-		$array = array();
+		$args	= wp_parse_args( $args, $defaults );
+		$array	= array();
 		foreach ( $args as $key => $value ) {
-			if ( $value == false ) {
+			if ( ! filter_var( $value, FILTER_VALIDATE_BOOLEAN ) ) {
 				continue;
 			}
 			$array[$key] = $value;
