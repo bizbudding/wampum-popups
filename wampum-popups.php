@@ -15,11 +15,10 @@
  * Text Domain:        wampum-popups
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
- * Version:            1.0.2
+ * Version:            2.0.0
  * GitHub Plugin URI:  https://github.com/JiveDig/wampum-popups
  * GitHub Branch:	   master
  */
-
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -31,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * wampum_popup( 'main-popup' );
  *
  * Showing default settings
- * $options = array(
+ * $args = array(
  * 		'css'  			=> true, 	// whether or not to load the stylesheet
  *		'style'			=> 'modal', // 'modal' or 'slideup'
  *		'time'			=> '4000',  // time in milliseconds
@@ -40,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  *		'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
  *		'width'	 		=> '400',   // Max popup content width in pixels
  * );
- * wampum_popup( 'main-popup', $options );
+ * wampum_popup( $content, $args );
  *
  * @since  1.0.0
  *
@@ -68,8 +67,10 @@ final class Wampum_Popups_Setup {
 	 */
 	private static $instance;
 
+	// Set popup counter
 	private $wampum_popups_counter = 0;
 
+	// Set the wp_localize_script args variable
 	private $localize_args = array();
 
 	/**
@@ -128,7 +129,7 @@ final class Wampum_Popups_Setup {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'WAMPUM_POPUPS_VERSION' ) ) {
-			define( 'WAMPUM_POPUPS_VERSION', '1.0.2' );
+			define( 'WAMPUM_POPUPS_VERSION', '2.0.0' );
 		}
 		// Plugin Folder Path.
 		if ( ! defined( 'WAMPUM_POPUPS_PLUGIN_DIR' ) ) {
@@ -173,6 +174,7 @@ final class Wampum_Popups_Setup {
 		// Add our custom popup hook
 		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
 
+		// Register our shortcode
 		add_shortcode( 'wampum_popup', array( $this, 'wampum_popup_callback' ) );
 
 	}
@@ -226,6 +228,12 @@ final class Wampum_Popups_Setup {
 		}
 	}
 
+	/**
+	 * See get_wampum_popup()
+	 * This is only here to handle the shortcode
+	 *
+	 * @since  2.0.0
+	 */
 	function wampum_popup_callback( $atts, $content = null ) {
 		if ( ! $content ) {
 			return;
@@ -248,6 +256,8 @@ final class Wampum_Popups_Setup {
 	/**
 	 * Get a wampum popup
 	 * Returns the popup so we can use it in a shortcode
+	 *
+	 * @since  1.0.2
 	 *
 	 * @param  string  $content  HTML to be used in the popup
 	 * @param  array   $args     All the popup args
@@ -313,6 +323,15 @@ final class Wampum_Popups_Setup {
 
 	}
 
+	/**
+	 * Get the properly organized array of args to localize
+	 *
+	 * @since  2.0.0
+	 *
+	 * @param  array  $args  Accepted args to localize
+	 *
+	 * @return array
+	 */
 	function get_localize_script_args( $args ) {
 		$popup_args = array(
 			'css'  			=> $args['css'],
@@ -342,47 +361,9 @@ final class Wampum_Popups_Setup {
 	}
 
 	/**
-	 * NO LONGER USING!!!! SEE ABOVE
-	 *
-	 * Separate the args for better organization when using them in our JS
-	 *
-	 * @param   array  $args  Array of args for the popup
-	 *
-	 * @return  void
-	 */
-	function localize_script( $args ) {
-
-		$popup_args = array(
-			'css'  			=> $args['css'],
-			'style'			=> $args['style'],
-			'time'			=> $args['time'],
-			'type' 			=> $args['type'],
-			'close_button'	=> $args['close_button'],
-			'close_outside'	=> $args['close_outside'],
-			'width'	 		=> $args['width'],
-		);
-
-		$ouibounce_args = array(
-			'aggressive'	=> $args['aggressive'],
-			'callback'		=> $args['callback'],
-			'cookieExpire'	=> $args['cookieExpire'],
-			'cookieDomain'	=> $args['cookieDomain'],
-			'cookieName'	=> $args['cookieName'],
-			'delay'			=> $args['delay'],
-			'sensitivity'	=> $args['sensitivity'],
-			'sitewide'		=> $args['sitewide'],
-			'timer'			=> $args['timer'],
-		);
-
-		$localize_args = array(
-			'wampumpopups'	=> $popup_args,
-			'ouibounce'		=> $this->ouibounce_args( $ouibounce_args ),
-		);
-		wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $localize_args );
-	}
-
-	/**
 	 * Strip out the args we don't want to send to the ouibounce() function
+	 *
+	 * @since   1.0.2
 	 *
 	 * @param   array  $ouibounce_args  Array of args to check agains
 	 *

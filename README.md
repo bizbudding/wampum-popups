@@ -10,41 +10,44 @@ A lightweight developer-based popups WordPress plugin utilizing [oiubounce](http
 ![Wampum Popups slideup example](assets/wampum-popups-slideup.jpg)
 
 ## Basic Usage
-1. Create a directory in your theme called /wampum-popups/
-1. Include one or more files with your popup content
-1. File location is /child-theme-name/wampum-popups/my-file-name.php
-1. Use CSS to style your content any way you'd like
-1. Use the template tag/function in anywhere before or in wp_footer, to ensure js file has time to load
+1. TBD
 1. Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
 
 ```
-wampum_popup( 'my-file-name' );
+wampum_popup( $content, $args );
+```
+
+### Shortcode in WP
+```
+[wampum_popup type="timed" style=modal time=500]
+<h2>This is something amazing</h2>
+<p>Do this or that thing!</p>
+<p><a class="button" href="#">Click Here</a></p>
+[/wampum_popup]
 ```
 
 ### Example with default settings
 
 ```
-$options = array(
+$args = array(
 	'css'  	=> true, 	// whether or not to load the stylesheet
 	'style'	=> 'modal', // 'modal' or 'slideup'
 	'time'	=> '4000',  // time in milliseconds
 	'type' 	=> 'exit',  // 'exit' or 'timed'
 );
-wampum_popup( 'my-file-name', $options );
+wampum_popup( '<p>My popup content here</p>', $args );
 ```
 
 ### Example showing the ability to use multiple/different popups on the same site. (Please don't be annoying!)
 
 ```
-$options = array(
-	'style'	=> 'slideup', 	// 'modal' or 'slideup'
-	'time'	=> '4000',  	// time in milliseconds
-	'type'	=> 'timed',  	// 'exit' or 'timed'
-);
 $args = array(
-	'cookieName' => 'customCookieName_2',
+	'style'			=> 'slideup', 	// 'modal' or 'slideup'
+	'time'			=> '4000',  	// time in milliseconds
+	'type'			=> 'timed',  	// 'exit' or 'timed'
+	'cookieName'	=> 'customCookieName_2',
 );
-wampum_popup( 'my-file-name', $options, $args );
+wampum_popup( '<p>My popup content here</p>', $args );
 ```
 
 ## Full example
@@ -56,13 +59,19 @@ function prefix_do_wampum_popup() {
 	if ( ! is_singular('post') ) {
 		return;
 	}
-	$options = array(
-		'style'	=> 'modal',
-		'type'	=> 'exit',
-	);
 	$args = array(
-    	'cookieName' => 'prefixCustomCookiePosts',
+		'style'			=> 'modal',
+		'type'			=> 'exit',
+		'cookieName'	=> 'prefixCustomCookiePosts',
 	);
-    wampum_popup( 'my-file-name', $options, $args );
+    wampum_popup( prefix_get_popup_content(), $options, $args );
+}
+
+function prefix_get_popup_content() {
+	$output = '';
+	$output .= '<h2>This is the headline</h2>';
+	$output .= '<p>My popup content here</p>';
+	$output .= '<p><a class="button" href="https://bizbudding.com">Click Here</a></p>';
+	return $output;
 }
 ```
