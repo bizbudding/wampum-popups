@@ -238,7 +238,8 @@ final class Wampum_Popups_Setup {
 		if ( ! $content ) {
 			return;
 		}
-		return $this->get_wampum_popup( $content, $atts );
+
+		return $this->get_wampum_popup( do_shortcode($content), $atts );
 	}
 
 	/**
