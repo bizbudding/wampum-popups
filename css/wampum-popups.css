@@ -14,8 +14,7 @@ Full Screen Overlay/Underlay/Popup
     margin: 0;
     overflow: auto;
     z-index: 100000; /* wp admin bar is 99999 */
-    -webkit-animation: wampumfadein 0.5s;
-    animation: wampumfadein 0.5s;
+    -webkit-animation: wampumfadein 0.5s;animation: wampumfadein 0.5s;
 }
 
 .wampum-popup-overlay {

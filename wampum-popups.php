@@ -68,7 +68,10 @@ final class Wampum_Popups_Setup {
 	 */
 	private static $instance;
 
-	public $templates;
+	private $wampum_popups_counter = 0;
+
+	private $localize_args = array();
+
 	/**
 	 * Main Wampum_Popups_Setup Instance.
 	 *
@@ -164,11 +167,14 @@ final class Wampum_Popups_Setup {
 		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 
 		// Register styles and scripts
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_stylesheets' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'stylesheets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
 
 		// Add our custom popup hook
 		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
+
+		add_shortcode( 'wampum_popup', array( $this, 'wampum_popup_callback' ) );
+
 	}
 
 	function activate() {
@@ -186,7 +192,7 @@ final class Wampum_Popups_Setup {
 	 *
 	 * @return null
 	 */
-	function register_stylesheets() {
+	function stylesheets() {
 	    wp_register_style( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'css/wampum-popups.css', array(), WAMPUM_POPUPS_VERSION );
 	}
 
@@ -199,7 +205,7 @@ final class Wampum_Popups_Setup {
 	 *
 	 * @return null
 	 */
-	function register_scripts() {
+	function scripts() {
 		wp_register_script( 'ouibounce', WAMPUM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array(), '0.0.12', true );
 		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.js', 	array('ouibounce'), WAMPUM_POPUPS_VERSION, true );
 	}
@@ -213,60 +219,177 @@ final class Wampum_Popups_Setup {
 	 */
 	function popups_hook() {
 		do_action( 'wampum_popups' );
+		if ( $this->wampum_popups_counter > 0 ) {
+			wp_enqueue_script( 'ouibounce' );
+			wp_enqueue_script( 'wampum-popups' );
+			wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $this->localize_args );
+		}
 	}
 
-	function wampum_popup( $content = '', $options = array(), $args = array() ) {
+	function wampum_popup_callback( $atts, $content = null ) {
+		if ( ! $content ) {
+			return;
+		}
+		return $this->get_wampum_popup( $content, $atts );
+	}
+
+	/**
+	 * Enqueues scripts and outputs a popup
+	 *
+	 * @param  string  $content  HTML to be used in the popup
+	 * @param  array   $args     All the popup args
+	 *
+	 * @return string  popup HTML
+	 */
+	function wampum_popup( $content = null, $args = array() ) {
+		echo $this->get_wampum_popup( $content, $args );
+	}
+
+	/**
+	 * Get a wampum popup
+	 * Returns the popup so we can use it in a shortcode
+	 *
+	 * @param  string  $content  HTML to be used in the popup
+	 * @param  array   $args     All the popup args
+	 *
+	 * @return string  popup HTML
+	 */
+	function get_wampum_popup( $content = null, $args = array() ) {
 
 		// Bail if popup has no content
 		if ( ! $content ) {
 			return;
 		}
 
-		// Popup options
+		// Increment the counter so JS can fire the correct popup if multiple on the same page!
+		$this->wampum_popups_counter++;
+
+		// Popup args
 		$defaults = array(
 			'css'  			=> true, 	// whether or not to load the stylesheet
 			'style'			=> 'modal', // 'modal' or 'slideup'
 			'time'			=> '4000',  // time in milliseconds
-			'type' 			=> 'exit',  // 'exit' or 'timed'
+			'type' 			=> false,   // 'exit' or 'timed'
 			'close_button'	=> true,	// whether or not to show the close button
 			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
 			'width'	 		=> '400',   // Max popup content width in pixels
+			'aggressive'	=> false,   // ouibounce - true
+			'callback'		=> false,   // ouibounce - function() { console.log('slim popups fired!'); }
+			'cookieExpire'	=> false,   // ouibounce - 7
+			'cookieDomain'	=> false,   // ouibounce - .example.com
+			'cookieName'	=> 'wampumPopupViewed',   // ouibounce - 'custom_cookie_name'
+			'delay'			=> false,   // ouibounce - 100
+			'sensitivity'	=> false,   // ouibounce - 40
+			'sitewide'		=> true,    // ouibounce - true (don't be annoying)
+			'timer'			=> false,   // ouibounce - 10
 		);
-		$options = wp_parse_args( $options, $defaults );
+		$args = shortcode_atts( $defaults, $args, 'wampum_popup' );
 
-		wp_enqueue_script('ouibounce');
-		wp_enqueue_script('wampum-popups');
+		// Add these args to a big localization array that saves each popup in its own index
+		$localize_args = $this->get_localize_script_args( $args );
+		$this->localize_args[$this->wampum_popups_counter] = $localize_args;
 
-		$this->localize_script( $options, $args );
-
-		if ( filter_var( $options['css'], FILTER_VALIDATE_BOOLEAN ) ) {
+		// Only enqueue CSS if the param is true
+		if ( filter_var( $args['css'], FILTER_VALIDATE_BOOLEAN ) ) {
 			wp_enqueue_style('wampum-popups');
 		}
 
-		$close_outside = filter_var( $options['close_outside'], FILTER_VALIDATE_BOOLEAN ) ? ' close-outside' : '';
+		$close_outside = filter_var( $args['close_outside'], FILTER_VALIDATE_BOOLEAN ) ? ' close-outside' : '';
 
-		echo '<div class="wampum-popup" style="display:none;">';
-			echo '<div class="wampum-popup-overlay' . $close_outside . '">';
-				echo '<div class="wampum-popup-content" style="max-width:' . $options['width'] . 'px;">';
-					if ( filter_var( $options['close_button'], FILTER_VALIDATE_BOOLEAN ) ) {
-						echo '<button class="wampum-popup-close">×<span class="screen-reader-text">Close Popup</span></button>';
+		$output = '';
+
+		$output .= '<div id="wampum-popup-' . $this->wampum_popups_counter . '" class="wampum-popup" style="display:none;" data-popup="' . $this->wampum_popups_counter . '">';
+			$output .= '<div class="wampum-popup-overlay' . $close_outside . '">';
+				$output .= '<div class="wampum-popup-content" style="max-width:' . $args['width'] . 'px;">';
+					if ( filter_var( $args['close_button'], FILTER_VALIDATE_BOOLEAN ) ) {
+						$output .= '<button class="wampum-popup-close">×<span class="screen-reader-text">Close Popup</span></button>';
 					}
-				    echo $content;
-				echo '</div>';
-			echo '</div>';
-		echo '</div>';
+				    $output .= $content;
+				$output .= '</div>';
+			$output .= '</div>';
+		$output .= '</div>';
+
+		return $output;
 
 	}
 
-	function localize_script( $options, $args ) {
-		$array = array(
-			'wampumpopups'	=> $options,
-			'ouibounce'		=> $this->ouibounce_args( $args ),
+	function get_localize_script_args( $args ) {
+		$popup_args = array(
+			'css'  			=> $args['css'],
+			'style'			=> $args['style'],
+			'time'			=> $args['time'],
+			'type' 			=> $args['type'],
+			'close_button'	=> $args['close_button'],
+			'close_outside'	=> $args['close_outside'],
+			'width'	 		=> $args['width'],
 		);
-		wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $array );
+
+		$ouibounce_args = array(
+			'aggressive'	=> $args['aggressive'],
+			'callback'		=> $args['callback'],
+			'cookieExpire'	=> $args['cookieExpire'],
+			'cookieDomain'	=> $args['cookieDomain'],
+			'cookieName'	=> $args['cookieName'],
+			'delay'			=> $args['delay'],
+			'sensitivity'	=> $args['sensitivity'],
+			'sitewide'		=> $args['sitewide'],
+			'timer'			=> $args['timer'],
+		);
+		return array(
+			'wampumpopups'	=> $popup_args,
+			'ouibounce'		=> $this->ouibounce_args( $ouibounce_args ),
+		);
 	}
 
-	function ouibounce_args( $args ) {
+	/**
+	 * NO LONGER USING!!!! SEE ABOVE
+	 *
+	 * Separate the args for better organization when using them in our JS
+	 *
+	 * @param   array  $args  Array of args for the popup
+	 *
+	 * @return  void
+	 */
+	function localize_script( $args ) {
+
+		$popup_args = array(
+			'css'  			=> $args['css'],
+			'style'			=> $args['style'],
+			'time'			=> $args['time'],
+			'type' 			=> $args['type'],
+			'close_button'	=> $args['close_button'],
+			'close_outside'	=> $args['close_outside'],
+			'width'	 		=> $args['width'],
+		);
+
+		$ouibounce_args = array(
+			'aggressive'	=> $args['aggressive'],
+			'callback'		=> $args['callback'],
+			'cookieExpire'	=> $args['cookieExpire'],
+			'cookieDomain'	=> $args['cookieDomain'],
+			'cookieName'	=> $args['cookieName'],
+			'delay'			=> $args['delay'],
+			'sensitivity'	=> $args['sensitivity'],
+			'sitewide'		=> $args['sitewide'],
+			'timer'			=> $args['timer'],
+		);
+
+		$localize_args = array(
+			'wampumpopups'	=> $popup_args,
+			'ouibounce'		=> $this->ouibounce_args( $ouibounce_args ),
+		);
+		wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $localize_args );
+	}
+
+	/**
+	 * Strip out the args we don't want to send to the ouibounce() function
+	 *
+	 * @param   array  $ouibounce_args  Array of args to check agains
+	 *
+	 * @return  array  The args to keep
+	 */
+	function ouibounce_args( $ouibounce_args ) {
+		$args = array();
 		// Script defaults
 		$defaults = array(
 			'aggressive'	=> false,   // true
@@ -279,15 +402,14 @@ final class Wampum_Popups_Setup {
 			'sitewide'		=> true,    // true (don't be annoying)
 			'timer'			=> false,   // 10
 		);
-		$args	= wp_parse_args( $args, $defaults );
-		$array	= array();
-		foreach ( $args as $key => $value ) {
+		$ouibounce_args	= wp_parse_args( $ouibounce_args, $defaults );
+		foreach ( $ouibounce_args as $key => $value ) {
 			if ( $value == false ) {
 				continue;
 			}
-			$array[$key] = $value;
+			$args[$key] = $value;
 		}
-		return $array;
+		return $args;
 	}
 
 }

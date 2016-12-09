@@ -4,69 +4,87 @@
 ( function ( document, $, undefined ) {
 	'use strict';
 
-	// Add class to the popup wrap
-	$( '.wampum-popup' ).addClass( 'wampum-' + wampum_popups_vars.wampumpopups.style );
+	// Find all the popups on the page
+	$.each( $( '.wampum-popup' ), function( key, value ) {
 
-	// Set the empty options array
-	var options = [];
+		var index		= $(this).attr( 'data-popup' );
+		var popup		= $( '#wampum-popup-' + index );
+		var popup_vars	= wampum_popups_vars[index].wampumpopups;
+		var oui_vars	= wampum_popups_vars[index].ouibounce;
 
-	// Loop through the properties
-	for ( var prop in wampum_popups_vars.ouibounce ) {
-	    if ( wampum_popups_vars.ouibounce.hasOwnProperty( prop ) ) {
-	 		// Set each custom property as an option in ouibounce
-		 	options[prop] = wampum_popups_vars.ouibounce[prop];
-	    }
-	}
+		// Add class to the popup wrap
+		popup.addClass( 'wampum-' + popup_vars.style );
 
-	if ( wampum_popups_vars.wampumpopups.type == 'exit' ) {
-		// Set the popup object
-		ouibounce( $('.wampum-popup')[0], options );
-	}
+		// Set the empty oui array
+		var oui = [];
 
-	// If timed, force firing of popup
-	if ( wampum_popups_vars.wampumpopups.type == 'timed' ) {
+		// Loop through the properties
+		for ( var prop in oui_vars ) {
+		    if ( oui_vars.hasOwnProperty( prop ) ) {
+		 		// Set each custom property as an option in ouibounce
+			 	oui[prop] = oui_vars[prop];
+		    }
+		}
 
-		/**
-		 * Force cookie name if aggressive mode is used
-		 * This prevents a cookie being set that may be used elsewhere for timed/exit popup
-		 */
-		options['cookieName'] = 'wampumpopupAggressive';
+		// This is default ouibounce, so easy!
+		if ( popup_vars.type == 'exit' ) {
+			// Set the popup object
+			ouibounce( popup[0], oui );
+		}
 
-		var _ouibounce = ouibounce( $('.wampum-popup')[0], options );
+		// If timed, force firing of popup
+		if ( popup_vars.type == 'timed' ) {
 
-		_ouibounce.aggressive = true;
+			if ( oui['aggressive'] ) {
+				/**
+				 * Force cookie name if aggressive mode is used
+				 * This prevents a cookie being set that may be used elsewhere for timed/exit popup
+				 */
+				oui['cookieName'] = 'wampumPopupAggressive';
+				// Set the ouibounce object as a variable
+				var _ouibounce = ouibounce( popup[0], oui );
+				// Force fire after given time
+				setTimeout(function() {
+					_ouibounce.fire();
+				}, popup_vars.time );
+			} else {
+				// If this popup hasn't been viewed yet
+				if ( typeof $.cookie(oui['cookieName']) === 'undefined' ) {
+					// Set the ouibounce object as a variable
+					var _ouibounce = ouibounce( popup[0], oui );
+					// Force fire after given time
+					setTimeout(function() {
+						_ouibounce.fire();
+					}, popup_vars.time );
+				}
+			}
 
-		// Force fire after given time
-		setTimeout(function() {
-			_ouibounce.fire();
+		}
+
+		// Close if clicking the close button
+		$( popup ).on( 'click', '.wampum-popup-close', function() {
+			popup.fadeOut('fast');
 			_ouibounce.disable();
-		}, wampum_popups_vars.wampumpopups.time );
+		});
 
-	}
+		if ( popup_vars.close_outside ) {
 
-	// TODO: If slideup, when closing slide back down
+		    // Close popup listener
+		    $('body').mouseup(function(e){
+		        // Set our popup as a variable
+		        var content = popup.find('.wampum-popup-content');
+		        /**
+		         * If click is not on our popup
+		         * If click is not on a child of our popup
+		         */
+		        if ( ! $(this).parents().hasClass('wampum-popup-content') && ! content.has(e.target).length ) {
+		            popup.fadeOut('fast');
+		            _ouibounce.disable();
+		        }
+		    });
 
-	// Close if clicking the close button
-	$('.wampum-popup-close').on( 'click', $(this), function() {
-		$('.wampum-popup').hide();
-	});
+		}
 
-
-	if ( wampum_popups_vars.wampumpopups.close_outside ) {
-
-	    // Close popup listener
-	    $('body').mouseup(function(e){
-	        // Set our popup as a variable
-	        var popup = $('.wampum-popup-content');
-	        /**
-	         * If click is not on our popup
-	         * If click is not on a child of our popup
-	         */
-	        if ( ! $(this).parents().hasClass('wampum-popup') && ! popup.has(e.target).length ) {
-	            $('.wampum-popup').hide();
-	        }
-	    });
-
-	}
+	}); // end each
 
 })( this, jQuery );
