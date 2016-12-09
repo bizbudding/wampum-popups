@@ -282,7 +282,7 @@ final class Wampum_Popups_Setup {
 		$args	= wp_parse_args( $args, $defaults );
 		$array	= array();
 		foreach ( $args as $key => $value ) {
-			if ( ! filter_var( $value, FILTER_VALIDATE_BOOLEAN ) ) {
+			if ( $value == false ) {
 				continue;
 			}
 			$array[$key] = $value;
