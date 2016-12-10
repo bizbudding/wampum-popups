@@ -80,7 +80,7 @@
 		         * If click is not on our popup
 		         * If click is not on a child of our popup
 		         */
-		        if ( ! $(this).parents().hasClass('wampum-popup-content') && ! content.has(e.target).length ) {
+		        if ( ! ( $(e.target).hasClass('wampum-popup-content') || $(e.target).parents().hasClass('wampum-popup-content') ) ) {
 		            popup.fadeOut('fast');
 		            // Disable ouibounce object if it was set
 					if ( typeof _ouibounce != 'undefined' ) {
