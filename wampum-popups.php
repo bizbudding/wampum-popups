@@ -283,6 +283,8 @@ final class Wampum_Popups_Setup {
 			'type' 			=> false,   // 'exit' or 'timed'
 			'close_button'	=> true,	// whether or not to show the close button
 			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
+			'logged_out'	=> null, 	// whether or not to show only to logged out users
+			'logged_in'		=> null,	// whether or not to show only to logged in users
 			'width'	 		=> '400',   // Max popup content width in pixels
 			'aggressive'	=> false,   // ouibounce - true
 			'callback'		=> false,   // ouibounce - function() { console.log('slim popups fired!'); }
@@ -295,6 +297,16 @@ final class Wampum_Popups_Setup {
 			'timer'			=> false,   // ouibounce - 10
 		);
 		$args = shortcode_atts( $defaults, $args, 'wampum_popup' );
+
+		// Bail if logged_in is true and user is not logged in
+		if ( $args['logged_in'] && ! is_user_logged_in() ) {
+			return;
+		}
+
+		// Bail if logged_out is true and user is not logged in
+		if ( $args['logged_out'] && is_user_logged_in() ) {
+			return;
+		}
 
 		// Add these args to a big localization array that saves each popup in its own index
 		$localize_args = $this->get_localize_script_args( $args );
