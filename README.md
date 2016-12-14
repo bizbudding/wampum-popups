@@ -1,56 +1,25 @@
 # Wampum Popups
-A lightweight developer-based popups WordPress plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
-* Use a simple function to create 1 or more popups (or slideups) throughout your website
-* Various options allow fine-tuning
-* Content template system allows clean and efficient loading of popup content
+A lightweight WordPress popups plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
+* Use a simple shortcode (or PHP function) to create 1 or more popups (or slideups) throughout your website
+* Stores an expiring cookie in the browser so it won't continue to display after a user closes it
+* Various options allow fine-tuning (see below)
 * Easy plugin updates in the WordPress Dashboard via [GitHub Updater plugin](https://github.com/afragen/github-updater)
 
-![Wampum Popups modal example](assets/wampum-popups-modal.png)
+![Wampum Popups modal example](assets/wampum-popups-modal.jpg)
 
 ![Wampum Popups slideup example](assets/wampum-popups-slideup.jpg)
 
 ## Basic Usage
-1. TBD
-1. Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
+Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
 
+**Shortcode**
 ```
-wampum_popup( $content, $args );
-```
-
-### Shortcode in WP
-```
-[wampum_popup type="timed" style=modal time=500]
-<h2>This is something amazing</h2>
-<p>Do this or that thing!</p>
-<p><a class="button" href="#">Click Here</a></p>
-[/wampum_popup]
+[wampum_popup type="exit" style=modal] // HTML content here [/wampum_popup]
 ```
 
-### Example with default settings
+**PHP function**
 
-```
-$args = array(
-	'css'  	=> true, 	// whether or not to load the stylesheet
-	'style'	=> 'modal', // 'modal' or 'slideup'
-	'time'	=> '4000',  // time in milliseconds
-	'type' 	=> 'exit',  // 'exit' or 'timed'
-);
-wampum_popup( '<p>My popup content here</p>', $args );
-```
-
-### Example showing the ability to use multiple/different popups on the same site. (Please don't be annoying!)
-
-```
-$args = array(
-	'style'			=> 'slideup', 	// 'modal' or 'slideup'
-	'time'			=> '4000',  	// time in milliseconds
-	'type'			=> 'timed',  	// 'exit' or 'timed'
-	'cookieName'	=> 'customCookieName_2',
-);
-wampum_popup( '<p>My popup content here</p>', $args );
-```
-
-## Full example
+Use the `wampum_popups` hook to safely output a popup. This way, if the plugin gets deactivated your popup won't throw errors and/or break your site
 
 ```
 add_action( 'wampum_popups', 'prefix_do_wampum_popup' );
@@ -59,19 +28,178 @@ function prefix_do_wampum_popup() {
 	if ( ! is_singular('post') ) {
 		return;
 	}
-	$args = array(
-		'style'			=> 'modal',
-		'type'			=> 'exit',
-		'cookieName'	=> 'prefixCustomCookiePosts',
-	);
-    wampum_popup( prefix_get_popup_content(), $options, $args );
+	$content = '// Some HTML';
+	$args	 = array(
+		'type'	=> 'timed',
+		'style'	=> 'slideup',
+	)
+	wampum_popup( $content, $args );
 }
+```
 
-function prefix_get_popup_content() {
-	$output = '';
-	$output .= '<h2>This is the headline</h2>';
-	$output .= '<p>My popup content here</p>';
-	$output .= '<p><a class="button" href="https://bizbudding.com">Click Here</a></p>';
-	return $output;
+## Shortcode parameters & PHP args
+
+###type (**required**)###
+
+(string) exit|timed
+
+**Default** `null`
+
+Style of the popup. This is the only required parameter.
+
+---
+
+###close_button###
+
+(boolean) true|false
+
+**Default** `true`
+
+Show the close button
+
+---
+
+###close_outside###
+
+(boolean) true|false
+
+**Default** `true`
+
+Close popup by clicking outside the modal
+
+---
+
+###style###
+
+(string) modal|slideup
+
+**Default** `'modal'`
+
+Style of the popup
+
+---
+
+###time###
+
+(integer) 4000
+
+**Default** `4000`
+
+Time in milliseconds. 4000ms = 4s
+
+---
+
+###logged_in and logged_out###
+
+**Note:** if logged_in and logged_out are both true, the popup will never load... naturally
+
+####logged_in####
+
+(boolean) true|false
+
+**Default** `false`
+
+Show only to logged in users
+
+####logged_out####
+
+(boolean) true|false
+
+**Default** `false`
+
+Show only to logged out users
+
+---
+
+###width###
+
+(integer) 400
+
+**Default** `400`
+
+Max width of the popup, in pixels. Helps for larger images, videos, or to make slideups not so weird
+
+---
+
+## ouibounce args ##
+
+These args are specific to the [oiubounce](https://github.com/carlsednaoui/ouibounce) script
+
+Most of these won't be used very often, so only a few are documented here
+
+###aggressive###
+
+(boolean) true|false
+
+**Default** `false`
+
+Force the popup to show, always. Don't be annoying.
+
+---
+
+###aggressive###
+
+(boolean) true|false
+
+**Default** `false`
+
+Force the popup to show, always. Don't be annoying.
+
+---
+
+###Other available options/parameters###
+
+Read about these options on the [ouibounce wiki](https://github.com/carlsednaoui/ouibounce/blob/master/README.md)
+
+* 'callback'
+* 'cookieExpire'
+* 'cookieDomain'
+* 'cookieName'
+* 'delay'
+* 'sensitivity'
+* 'sitewide'
+* 'timer'
+
+##Advanced Usage##
+
+This example showing the ability to use multiple/different popups on the same site.
+
+
+```
+/**
+ * Display different popups on different sections of the site
+ * 'cookieName' param is used to make the popups act independently
+ * if cookieName was the same (this is default behavior) and the user viewed one popup,
+ * they wouldn't see the other until the cookie expired.
+ *
+ * @uses Wampum - Popups plugin
+ *
+ * @return void
+ */
+add_action( 'wampum_popups', 'prefix_do_wampum_popups' );
+function prefix_do_wampum_popups() {
+
+	// Show this popup on posts
+	if ( is_singular('post') ) {
+		$content = '<p>My post popup content here</p>';
+		$args	 = array(
+			'cookieName' => 'prefix_posts_popup_viewed'
+			'type'		 => 'exit',
+			'style'		 => 'modal',
+		)
+		wampum_popup( $content, $args );
+	}
+
+	// Show this popup on pages
+	if ( is_singular('page') ) {
+		$content = '<p>My post page content here</p>';
+		$args	 = array(
+			'cookieName' => 'prefix_pages_popup_viewed'
+			'type'		 => 'timed',
+			'style'		 => 'slideup',
+		)
+		wampum_popup( $content, $args );
+	}
+
 }
 ```

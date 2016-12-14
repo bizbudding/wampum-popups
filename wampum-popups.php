@@ -26,31 +26,15 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Main function to create a popup
  *
- * Basic usage - Popup content in child theme: /child-theme-name/wampum-popups/main-popup.php
- * wampum_popup( 'main-popup' );
- *
- * Showing default settings
- * $args = array(
- * 		'css'  			=> true, 	// whether or not to load the stylesheet
- *		'style'			=> 'modal', // 'modal' or 'slideup'
- *		'time'			=> '4000',  // time in milliseconds
- *		'type' 			=> 'exit',  // 'exit' or 'timed'
- *		'close_button'	=> true,	// whether or not to show the close button
- *		'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
- *		'width'	 		=> '400',   // Max popup content width in pixels
- * );
- * wampum_popup( $content, $args );
- *
  * @since  1.0.0
  *
  * @param  string  $content  File name (one word, no hyphens or underscores)
- * @param  array   $options	  Plugin options (css, style, time, type)
- * @param  array   $args   	  Ouibounce object properties. See (https://github.com/carlsednaoui/ouibounce#options)
+ * @param  array   $args	 Plugin options (type, style, time)
  *
  * @return void
  */
-function wampum_popup( $content, $options = array(), $args = array() ) {
-	Wampum_Popups()->wampum_popup( $content, $options, $args );
+function wampum_popup( $content, $args = array() ) {
+	Wampum_Popups()->wampum_popup( $content, $args );
 }
 
 if ( ! class_exists( 'Wampum_Popups_Setup' ) ) :
@@ -209,7 +193,7 @@ final class Wampum_Popups_Setup {
 	 */
 	function scripts() {
 		wp_register_script( 'ouibounce', WAMPUM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array(), '0.0.12', true );
-		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.js', 	array('ouibounce'), WAMPUM_POPUPS_VERSION, true );
+		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.min.js', 	array('ouibounce'), WAMPUM_POPUPS_VERSION, true );
 	}
 
 	/**
@@ -220,8 +204,17 @@ final class Wampum_Popups_Setup {
 	 * @return 	null
 	 */
 	function popups_hook() {
+
 		do_action( 'wampum_popups' );
+
+		// If we have at least 1 popup
 		if ( $this->wampum_popups_counter > 0 ) {
+			// Styles baby
+			$css = apply_filters( 'wampum_popups_load_css', '__return_true' );
+			if ( $css ) {
+				wp_enqueue_style( 'wampum-popups' );
+			}
+			// Scripts baby
 			wp_enqueue_script( 'ouibounce' );
 			wp_enqueue_script( 'wampum-popups' );
 			wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $this->localize_args );
@@ -238,7 +231,6 @@ final class Wampum_Popups_Setup {
 		if ( ! $content ) {
 			return;
 		}
-
 		return $this->get_wampum_popup( do_shortcode($content), $atts );
 	}
 
@@ -272,19 +264,15 @@ final class Wampum_Popups_Setup {
 			return;
 		}
 
-		// Increment the counter so JS can fire the correct popup if multiple on the same page!
-		$this->wampum_popups_counter++;
-
 		// Popup args
 		$defaults = array(
-			'css'  			=> true, 	// whether or not to load the stylesheet
 			'style'			=> 'modal', // 'modal' or 'slideup'
 			'time'			=> '4000',  // time in milliseconds
-			'type' 			=> false,   // 'exit' or 'timed'
+			'type' 			=> null,   // 'exit' or 'timed' (REQUIRED)
 			'close_button'	=> true,	// whether or not to show the close button
 			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
-			'logged_out'	=> null, 	// whether or not to show only to logged out users
-			'logged_in'		=> null,	// whether or not to show only to logged in users
+			'logged_in'		=> false,	// whether or not to show only to logged in users
+			'logged_out'	=> false, 	// whether or not to show only to logged out users
 			'width'	 		=> '400',   // Max popup content width in pixels
 			'aggressive'	=> false,   // ouibounce - true
 			'callback'		=> false,   // ouibounce - function() { console.log('slim popups fired!'); }
@@ -298,6 +286,12 @@ final class Wampum_Popups_Setup {
 		);
 		$args = shortcode_atts( $defaults, $args, 'wampum_popup' );
 
+		// Bail if we don't have a type, since it's required!
+		$types = array('exit','timed');
+		if ( ! in_array( $args['type'], $types ) ) {
+			return;
+		}
+
 		// Bail if logged_in is true and user is not logged in
 		if ( $args['logged_in'] && ! is_user_logged_in() ) {
 			return;
@@ -308,14 +302,23 @@ final class Wampum_Popups_Setup {
 			return;
 		}
 
-		// Add these args to a big localization array that saves each popup in its own index
+		// Bail if popup is not aggressive and cookie has already been viewed
+		$aggressive	= filter_var( $args['aggressive'], FILTER_VALIDATE_BOOLEAN );
+		$viewed		= isset($_COOKIE[$args['cookieName']]) && filter_var( $_COOKIE[$args['cookieName']], FILTER_VALIDATE_BOOLEAN ) == true ? true : false;
+		if ( ! $aggressive && $viewed ) {
+			return;
+		}
+
+		// Increment the counter so JS can fire the correct popup if multiple on the same page!
+		$this->wampum_popups_counter++;
+
+		/**
+		 * Add these args to a big localization array that saves each popup in its own index
+		 * First get the array of this specific popup's args
+		 * Then add this as an index to the main localize object
+		 */
 		$localize_args = $this->get_localize_script_args( $args );
 		$this->localize_args[$this->wampum_popups_counter] = $localize_args;
-
-		// Only enqueue CSS if the param is true
-		if ( filter_var( $args['css'], FILTER_VALIDATE_BOOLEAN ) ) {
-			wp_enqueue_style('wampum-popups');
-		}
 
 		$close_outside = filter_var( $args['close_outside'], FILTER_VALIDATE_BOOLEAN ) ? ' close-outside' : '';
 
@@ -347,15 +350,13 @@ final class Wampum_Popups_Setup {
 	 */
 	function get_localize_script_args( $args ) {
 		$popup_args = array(
-			'css'  			=> $args['css'],
+			'close_button'	=> $args['close_button'],
+			'close_outside'	=> $args['close_outside'],
 			'style'			=> $args['style'],
 			'time'			=> $args['time'],
 			'type' 			=> $args['type'],
-			'close_button'	=> $args['close_button'],
-			'close_outside'	=> $args['close_outside'],
 			'width'	 		=> $args['width'],
 		);
-
 		$ouibounce_args = array(
 			'aggressive'	=> $args['aggressive'],
 			'callback'		=> $args['callback'],
