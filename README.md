@@ -1,5 +1,5 @@
 # Wampum Popups
-A lightweight WordPress popups plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
+A lightweight but flexible WordPress popups plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
 * Use a simple shortcode (or PHP function) to create 1 or more popups (or slideups) throughout your website
 * Stores an expiring cookie in the browser so it won't continue to display after a user closes it
 * Various options allow fine-tuning (see below)

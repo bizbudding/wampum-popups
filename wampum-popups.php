@@ -8,7 +8,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:        Wampum - Popups
- * Description: 	   A lightweight developer-based popups plugin utilizing oiubounce
+ * Description: 	   A lightweight but flexible WordPress popups plugin
  * Plugin URI:         https://github.com/JiveDig/wampum-popups
  * Author:             Mike Hemberger
  * Author URI:         https://bizbudding.com
