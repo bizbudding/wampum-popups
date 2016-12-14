@@ -268,7 +268,7 @@ final class Wampum_Popups_Setup {
 	function get_wampum_popup( $content = null, $args = array() ) {
 
 		// Bail if popup has no content
-		if ( ! $content ) {
+		if ( ! trim($content) ) {
 			return;
 		}
 
