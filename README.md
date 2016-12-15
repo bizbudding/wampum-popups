@@ -113,11 +113,11 @@ Show only to logged out users
 
 ###width###
 
-(integer) 400
+(string) 400px|auto|calc(100vw - 5%)
 
-**Default** `400`
+**Default** `400px`
 
-Max width of the popup, in pixels. Helps for larger images, videos, or to make slideups not so weird
+Max width of the popup, formatted for CSS `max-width: 400px;` spec. Helps for custom designs, larger images, videos, or to make slideups not so weird if too big.
 
 ---
 

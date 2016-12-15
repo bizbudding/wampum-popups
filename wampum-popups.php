@@ -273,7 +273,7 @@ final class Wampum_Popups_Setup {
 			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
 			'logged_in'		=> false,	// whether or not to show only to logged in users
 			'logged_out'	=> false, 	// whether or not to show only to logged out users
-			'width'	 		=> '400',   // Max popup content width in pixels
+			'width'	 		=> '400px', // max-width of popup
 			'aggressive'	=> false,   // ouibounce - true
 			'callback'		=> false,   // ouibounce - function() { console.log('slim popups fired!'); }
 			'cookieExpire'	=> false,   // ouibounce - 7
@@ -326,7 +326,7 @@ final class Wampum_Popups_Setup {
 
 		$output .= '<div id="wampum-popup-' . $this->wampum_popups_counter . '" class="wampum-popup" style="display:none;" data-popup="' . $this->wampum_popups_counter . '">';
 			$output .= '<div class="wampum-popup-overlay' . $close_outside . '">';
-				$output .= '<div class="wampum-popup-content" style="max-width:' . $args['width'] . 'px;">';
+				$output .= '<div class="wampum-popup-content" style="max-width:' . $args['width'] . ';">';
 					if ( filter_var( $args['close_button'], FILTER_VALIDATE_BOOLEAN ) ) {
 						$output .= '<button class="wampum-popup-close">×<span class="screen-reader-text">Close Popup</span></button>';
 					}
