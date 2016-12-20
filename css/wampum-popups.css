@@ -1,9 +1,12 @@
-/* Popup Overlay
+/**
+ * General
 --------------------------------------------- */
 
-/*
-Full Screen Overlay/Underlay/Popup
---------------------------------------------- */
+.wampum-popup *,
+.wampum-popup *::before,
+.wampum-popup *::after {
+    box-sizing: border-box;
+}
 
 .wampum-popup {
     position: fixed;
@@ -18,6 +21,7 @@ Full Screen Overlay/Underlay/Popup
 }
 
 .wampum-popup-overlay {
+    position: relative;
     width: 100%;
     height: 100%;
     overflow: hidden; /* hides scrollbar when sliding up */
@@ -32,43 +36,133 @@ Full Screen Overlay/Underlay/Popup
     background-color: #fff;
     cursor: auto;
     padding: 2%;
-    overflow: auto;
 }
 
-.wampum-popup-close {
-    position: absolute;
-    top: 0;
-    right: 0;
+.wampum-popup-content ::-moz-selection {
     background-color: transparent;
-    color: #333;
+    color: inherit;
+}
+
+.wampum-popup-content ::selection {
+    background-color: transparent;
+    color: inherit;
+}
+
+.wampum-popup-button {
+    display: inline-block;
     font-family: Arial;
-    font-size: 30px;
+    font-size: 36px;
     font-weight: normal;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
+    line-height: 1;
     padding: 0;
     margin: 0;
     vertical-align: middle;
     text-align: center;
     border: none;
     box-shadow: none;
-    opacity: 0.65;
+    overflow: hidden;
+    opacity: 0.75;
 }
 
-.wampum-popup-close:focus {
-    outline: none;
-    box-shadow: none;
-    border: none;
-    border-left: 1px solid rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+.wampum-popup-button:hover {
+    cursor: pointer;
 }
 
-.wampum-popup-close:hover {
-    background-color: transparent;
-    color: #333;
+.wampum-popup-button:active,
+.wampum-popup-button:focus,
+.wampum-popup-button:hover {
     opacity: 1;
 }
+
+.wampum-popup-close {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    text-align: right;
+    margin-right: -4px;
+    overflow: hidden;
+}
+
+.wampum-popup-close::before,
+.wampum-popup-close::after {
+    background: #fff;
+    content: '';
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    margin-top: -1px;
+}
+
+.wampum-popup-close:hover::before,
+.wampum-popup-close:hover::after {
+    background: #fff;
+}
+
+.wampum-popup-close::before {
+    -webkit-transform: rotate(45deg);-ms-transform: rotate(45deg);transform: rotate(45deg);
+}
+.wampum-popup-close::after {
+    -webkit-transform: rotate(-45deg);-ms-transform: rotate(-45deg);transform: rotate(-45deg);
+}
+
+.wampum-popup-prev,
+.wampum-popup-next {
+    position: fixed;
+    top: 50%;
+    -webkit-transform: translate(0,-50%);-ms-transform: translate(0,-50%);transform: translate(0,-50%);
+    cursor: pointer;
+}
+
+.wampum-popup-prev::before,
+.wampum-popup-prev::after,
+.wampum-popup-next::before,
+.wampum-popup-next::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 20px;
+}
+
+.wampum-popup-prev::before,
+.wampum-popup-prev::after {
+    border-left: 3px solid #fff;
+}
+
+.wampum-popup-prev::before {
+    -webkit-transform: rotate(-45deg);-ms-transform: rotate(-45deg);transform: rotate(-45deg);
+}
+.wampum-popup-prev::after {
+    -webkit-transform: rotate(45deg);-ms-transform: rotate(45deg);transform: rotate(45deg);
+}
+
+.wampum-popup-next::before,
+.wampum-popup-next::after {
+    border-right: 3px solid #fff;
+}
+
+.wampum-popup-next::before {
+    -webkit-transform: rotate(45deg);-ms-transform: rotate(45deg);transform: rotate(45deg);
+}
+
+.wampum-popup-next::after {
+    -webkit-transform: rotate(-45deg);-ms-transform: rotate(-45deg);transform: rotate(-45deg);
+}
+
+.wampum-popup-prev {
+    left: 0;
+    margin-left: 2%;
+}
+
+.wampum-popup-next {
+    right: 0;
+    margin-right: 2%;
+}
+
+/**
+ * Styles
+--------------------------------------------- */
 
 /* Modal */
 
@@ -78,11 +172,12 @@ Full Screen Overlay/Underlay/Popup
     -ms-flex-direction: column;-webkit-flex-direction: column;flex-direction: column;
     -ms-flex-pack: center;-webkit-justify-content: center;justify-content: center;
     -ms-flex-align: center;-ms-grid-row-align: center;-webkit-align-items: center;align-items: center;
-    padding: 2%;
 }
 
-.wampum-modal .wampum-popup-content {
-    width: 96%;
+.wampum-modal .wampum-popup-inner {
+    display: block;
+    max-width: calc(100vw - 10%);
+    max-height: calc(100vh - 20%);
     padding: 24px;
     margin: auto;
     box-shadow: 0 1px 3px rgba(0,0,0,.13);
@@ -101,13 +196,32 @@ Full Screen Overlay/Underlay/Popup
     padding: 2% 2% 0;
 }
 
-.wampum-slideup .wampum-popup-content {
+.wampum-slideup .wampum-popup-inner {
     width: 100%;
     border-radius: 3px 3px 0 0;
     -webkit-animation: wampumslideup 0.5s;animation: wampumslideup 0.5s;
 }
 
-/* Animations */
+/**
+ * Types
+--------------------------------------------- */
+
+/* Gallery */
+
+.wampum-popup.wampum-gallery .wampum-popup-content {
+    padding: 0;
+    border-radius: 0;
+}
+
+.wampum-popup.wampum-gallery img {
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+
+/**
+ * Animations
+--------------------------------------------- */
 
 /* Fade In */
 @-webkit-keyframes wampumfadein {

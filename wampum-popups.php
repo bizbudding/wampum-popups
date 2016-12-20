@@ -15,7 +15,7 @@
  * Text Domain:        wampum-popups
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
- * Version:            2.0.0
+ * Version:            0.0.1
  * GitHub Plugin URI:  https://github.com/JiveDig/wampum-popups
  * GitHub Branch:	   master
  */
@@ -56,6 +56,11 @@ final class Wampum_Popups_Setup {
 
 	// Set the wp_localize_script args variable
 	private $localize_args = array();
+
+	// public function __construct() {
+		// $this->localize_args['root'] = esc_url_raw( rest_url() );
+		// $this->localize_args['nonce'] = wp_create_nonce( 'wp_rest' );
+	// }
 
 	/**
 	 * Main Wampum_Popups_Setup Instance.
@@ -113,7 +118,7 @@ final class Wampum_Popups_Setup {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'WAMPUM_POPUPS_VERSION' ) ) {
-			define( 'WAMPUM_POPUPS_VERSION', '2.0.0' );
+			define( 'WAMPUM_POPUPS_VERSION', '0.0.1' );
 		}
 		// Plugin Folder Path.
 		if ( ! defined( 'WAMPUM_POPUPS_PLUGIN_DIR' ) ) {
@@ -155,11 +160,14 @@ final class Wampum_Popups_Setup {
 		add_action( 'wp_enqueue_scripts', array( $this, 'stylesheets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
 
-		// Add our custom popup hook
-		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
-
 		// Register our shortcode
 		add_shortcode( 'wampum_popup', array( $this, 'wampum_popup_callback' ) );
+
+		add_filter( 'wp_get_attachment_link', array( $this, 'add_image_id' ), 10, 4 );
+
+		add_action( 'wampum_popups', array( $this, 'gallery_popup' ) );
+		// Add our custom popup hook
+		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
 
 	}
 
@@ -167,6 +175,17 @@ final class Wampum_Popups_Setup {
 	}
 
 	function deactivate() {
+	}
+
+	function add_image_id( $html, $post_id, $size, $permalink ) {
+        // This returns an array of (url, width, height)
+		$image = wp_get_attachment_image_src( $post_id, 'large' );
+		return preg_replace( '/href=\'(.*?)\'/', 'href=\'' . $image[0] . '\'', $html );
+        // return $new_content;
+
+		// $link = isset($attr['link']) && 'file' == $attr['link'] ? wp_get_attachment_link($post_id, $size, false, false) : wp_get_attachment_link($post_id, $size, true, false);
+		// return str_replace( 'a href', 'a data-url="' . $post_id . '" href', $html );
+		// return str_replace( 'a href', 'a data-id="' . $post_id . '" href', $html );
 	}
 
 	/**
@@ -193,32 +212,7 @@ final class Wampum_Popups_Setup {
 	 */
 	function scripts() {
 		wp_register_script( 'ouibounce', WAMPUM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array(), '0.0.12', true );
-		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.min.js', 	array('ouibounce'), WAMPUM_POPUPS_VERSION, true );
-	}
-
-	/**
-	 * Add a new hook so devs can safely add a new popup without things breaking if this plugin gets deactivated
-	 *
-	 * @since 	1.1.0
-	 *
-	 * @return 	null
-	 */
-	function popups_hook() {
-
-		do_action( 'wampum_popups' );
-
-		// If we have at least 1 popup
-		if ( $this->wampum_popups_counter > 0 ) {
-			// Styles baby
-			$css = apply_filters( 'wampum_popups_load_css', '__return_true' );
-			if ( $css ) {
-				wp_enqueue_style( 'wampum-popups' );
-			}
-			// Scripts baby
-			wp_enqueue_script( 'ouibounce' );
-			wp_enqueue_script( 'wampum-popups' );
-			wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $this->localize_args );
-		}
+		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.js', 	array('ouibounce'), WAMPUM_POPUPS_VERSION, true );
 	}
 
 	/**
@@ -259,8 +253,8 @@ final class Wampum_Popups_Setup {
 	 */
 	function get_wampum_popup( $content = null, $args = array() ) {
 
-		// Bail if popup has no content
-		if ( ! trim($content) ) {
+		// Bail if an exit or timed popup and has no content
+		if ( in_array( $args['type'], array('exit','timed') ) && ! trim($content) ) {
 			return;
 		}
 
@@ -287,7 +281,7 @@ final class Wampum_Popups_Setup {
 		$args = shortcode_atts( $defaults, $args, 'wampum_popup' );
 
 		// Bail if we don't have a type, since it's required!
-		$types = array('exit','timed');
+		$types = array('click','exit','gallery','timed');
 		if ( ! in_array( $args['type'], $types ) ) {
 			return;
 		}
@@ -320,23 +314,30 @@ final class Wampum_Popups_Setup {
 		$localize_args = $this->get_localize_script_args( $args );
 		$this->localize_args[$this->wampum_popups_counter] = $localize_args;
 
+		// Send it!
+		return $this->get_wampum_popup_html( $content, $args, $this->wampum_popups_counter );
+
+	}
+
+	function get_wampum_popup_html( $content, $args, $index = null ) {
+		// Maybe add close outside class
 		$close_outside = filter_var( $args['close_outside'], FILTER_VALIDATE_BOOLEAN ) ? ' close-outside' : '';
-
-		$output = '';
-
-		$output .= '<div id="wampum-popup-' . $this->wampum_popups_counter . '" class="wampum-popup" style="display:none;" data-popup="' . $this->wampum_popups_counter . '">';
+		// The markup
+		$output  = '';
+		$output .= '<div id="wampum-popup-' . $index . '" class="wampum-popup" style="display:none;" data-popup="' . $index . '">';
 			$output .= '<div class="wampum-popup-overlay' . $close_outside . '">';
-				$output .= '<div class="wampum-popup-content" style="max-width:' . $args['width'] . ';">';
+				$output .= '<div class="wampum-popup-inner" style="max-width:' . $args['width'] . ';">';
+					// If close button, add it
 					if ( filter_var( $args['close_button'], FILTER_VALIDATE_BOOLEAN ) ) {
-						$output .= '<button class="wampum-popup-close">×<span class="screen-reader-text">Close Popup</span></button>';
+						$output .= '<span class="wampum-popup-button wampum-popup-close"><span class="screen-reader-text">Close Popup</span></span>';
 					}
-				    $output .= $content;
+					$output .= '<div class="wampum-popup-content">';
+					    $output .= $content;
+					$output .= '</div>';
 				$output .= '</div>';
 			$output .= '</div>';
 		$output .= '</div>';
-
 		return $output;
-
 	}
 
 	/**
@@ -405,6 +406,48 @@ final class Wampum_Popups_Setup {
 			$args[$key] = $value;
 		}
 		return $args;
+	}
+
+	function gallery_popup() {
+		// If not a singular view and no gallery
+		if ( ! ( is_singular() && get_post_gallery( get_the_ID(), false ) ) ) {
+			return;
+		}
+		// Output popup with empty span so it forces display
+		$args = array(
+			'aggressive'	=> true,
+			'close_outside'	=> false,
+			'style'			=> 'modal',
+			'type'			=> 'gallery',
+			'width'			=> 'auto',
+		);
+		wampum_popup( '', $args );
+	}
+
+	/**
+	 * Add a new hook so devs can safely add a new popup without things breaking if this plugin gets deactivated
+	 *
+	 * @since 	1.1.0
+	 *
+	 * @return 	null
+	 */
+	function popups_hook() {
+
+		do_action( 'wampum_popups' );
+
+		// If we have at least 1 popup
+		if ( ( $this->wampum_popups_counter > 0 ) ) {
+			$css = apply_filters( 'wampum_popups_load_css', '__return_true' );
+			if ( $css ) {
+				// Styles baby
+				wp_enqueue_style( 'wampum-popups' );
+			}
+			// Scripts baby
+			wp_enqueue_script( 'ouibounce' );
+			wp_enqueue_script( 'wampum-popups' );
+			wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $this->localize_args );
+		}
+
 	}
 
 }

@@ -4,16 +4,25 @@
 ( function ( document, $, undefined ) {
 	'use strict';
 
+	// Helper function to resize the child element inside .wampum-popup-content
+	function resizeContent(element){
+		// Clear it, so it can grow
+		element.css('width', 'auto').css('height', 'auto');
+		// Resize baby
+		element.css(
+			'height', element.parents('.wampum-popup-inner').height(),
+			'max-height', '100%',
+			'max-width', '100%'
+		);
+	}
+
 	// Find all the popups on the page
 	$.each( $( '.wampum-popup' ), function( key, value ) {
 
-		var index			= $(this).attr( 'data-popup' );
-		var popup 			= $( '#wampum-popup-' + index );
-		var popup_vars		= wampum_popups_vars[index].wampumpopups;
-		var oui_vars		= wampum_popups_vars[index].ouibounce;
-
-		// Add class to the popup wrap
-		popup.addClass( 'wampum-' + popup_vars.style );
+		var index		= $(this).attr( 'data-popup' );
+		var popup		= $( '#wampum-popup-' + index );
+		var popup_vars	= wampum_popups_vars[index].wampumpopups;
+		var oui_vars	= wampum_popups_vars[index].ouibounce;
 
 		// Set the empty oui array
 		var oui = [];
@@ -26,10 +35,130 @@
 		    }
 		}
 
+		// Add class to the popup wrap
+		popup.addClass( 'wampum-' + popup_vars.style + ' wampum-' + popup_vars.type );
+
+		//
+		if ( popup_vars.type == 'gallery' ) {
+
+			var content = popup.find('.wampum-popup-content');
+
+			// If more than one gallery image, add prev/next buttons
+			if ( $('.gallery-item').length > 1 ) {
+				content.after('<span style="display:none;" class="wampum-popup-button wampum-popup-next" data-src=""><span class="screen-reader-text">Next</span></span>');
+				content.after('<span style="display:none;" class="wampum-popup-button wampum-popup-prev" data-src=""><span class="screen-reader-text">Previous</span></span>');
+			}
+
+			$( '.gallery-item' ).on( 'click', 'a', function(e){
+
+				e.preventDefault();
+
+				var src	= $(this).prop('href');
+				var alt = $(this).find('img').attr('alt');
+
+				// Remove any existing images
+				content.find('img').remove();
+
+				// Add image to content
+				content.append('<img style="width:auto;height:auto;" src="' + src + '" alt="' + alt + '"/>');
+
+				// Get the image variable
+				var img	= popup.find('img');
+
+				var prev_button	= popup.find('.wampum-popup-prev').first();
+				var next_button	= popup.find('.wampum-popup-next').first();
+				var current		= $(this).parents('.gallery-item');
+				var prev_item	= current.prevAll('.gallery-item').first();
+				var next_item	= current.nextAll('.gallery-item').first();
+
+				if ( prev_item.length > 0 ) {
+					prev_button.show();
+				} else {
+					prev_button.hide();
+				}
+
+				if ( next_item.length > 0 ) {
+					next_button.show();
+				} else {
+					next_button.hide();
+				}
+
+				// Show it, this has nothing to do with ouibounce
+				popup.show();
+
+				// Resize after image is loaded (so we make sure to get the right size!)
+				img.on( 'load', function() {
+					// Resize
+					resizeContent(img);
+				});
+
+				// Resize image when window is resized
+				$(window).resize(function() {
+					resizeContent(img);
+				});
+
+				prev_button.on( 'click', function() {
+
+					// Set the new current item
+					current = prev_item;
+
+					// Update image
+					img.attr( 'src', current.find('a').prop('href') ).attr( 'alt', current.find('img').attr('alt') );
+
+					// Update the item variables
+					prev_item = current.prevAll('.gallery-item') ? current.prevAll('.gallery-item').first() : '';
+					next_item = current.nextAll('.gallery-item') ? current.nextAll('.gallery-item').first() : '';
+
+					// If there is an item, show it, otherwise hide it
+					if ( prev_item.length > 0 ) {
+						prev_button.show();
+					} else {
+						prev_button.hide();
+					}
+
+					if ( next_item.length > 0 ) {
+						next_button.show();
+					} else {
+						next_button.hide();
+					}
+
+				});
+
+				next_button.on( 'click', function() {
+
+					// Set the new current item
+					current = next_item;
+
+					// Update image
+					img.attr( 'src', current.find('a').prop('href') ).attr( 'alt', current.find('img').attr('alt') );
+
+					// Update the item variables
+					prev_item = current.prevAll('.gallery-item') ? current.prevAll('.gallery-item').first() : '';
+					next_item = current.nextAll('.gallery-item') ? current.nextAll('.gallery-item').first() : '';
+
+					// If there is an item, show it, otherwise hide it
+					if ( prev_item.length > 0 ) {
+						prev_button.show();
+					} else {
+						prev_button.hide();
+					}
+
+					if ( next_item.length > 0 ) {
+						next_button.show();
+					} else {
+						next_button.hide();
+					}
+
+				});
+
+			});
+
+		}
+
 		// This is default ouibounce, so easy!
 		if ( popup_vars.type == 'exit' ) {
 			// Set the popup object
-			ouibounce( popup, oui );
+			ouibounce( popup[0], oui );
 		}
 
 		// If timed, force firing of popup
@@ -73,6 +202,10 @@
 
 		    // Close popup listener
 		    $('body').mouseup(function(e){
+		    	// Bail if clicking a prev/next button
+		    	if ( $(e.target).hasClass('wampum-popup-prev') || $(e.target).hasClass('wampum-popup-next') ) {
+		    		return false;
+		    	}
 		        // Set our popup as a variable
 		        var content = popup.find('.wampum-popup-content');
 		        /**
