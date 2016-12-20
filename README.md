@@ -151,7 +151,7 @@ Force the popup to show, always. Don't be annoying.
 
 Read about these options on the [ouibounce wiki](https://github.com/carlsednaoui/ouibounce/blob/master/README.md)
 
-* 'callback'
+* 'callback' (This has been removed/reserved for future use)
 * 'cookieExpire'
 * 'cookieDomain'
 * 'cookieName'

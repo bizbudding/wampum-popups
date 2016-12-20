@@ -15,37 +15,39 @@
     width: 100%;
     height: 100%;
     margin: 0;
-    overflow: auto;
     z-index: 100000; /* wp admin bar is 99999 */
     -webkit-animation: wampumfadein 0.5s;animation: wampumfadein 0.5s;
 }
 
 .wampum-popup-overlay {
-    position: relative;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* hides scrollbar when sliding up */
 }
 
 .wampum-popup-overlay.close-outside {
     cursor: pointer;
 }
 
-.wampum-popup-content {
-    position: relative;
-    background-color: #fff;
+.wampum-popup-inner {
     cursor: auto;
-    padding: 2%;
 }
 
-.wampum-popup-content ::-moz-selection {
+.wampum-popup-inner ::-moz-selection {
     background-color: transparent;
     color: inherit;
 }
 
-.wampum-popup-content ::selection {
+.wampum-popup-inner ::selection {
     background-color: transparent;
     color: inherit;
+}
+
+.wampum-popup-content {
+    background-color: #fff;
+    max-width: calc(100vw - 10%);
+    max-height: 80vh;
+    margin: auto;
+    overflow-y: auto;
 }
 
 .wampum-popup-button {
@@ -75,12 +77,12 @@
 }
 
 .wampum-popup-close {
+    display: -webkit-flex;display: -ms-flexbox;display: flex;
     position: relative;
     width: 30px;
     height: 30px;
-    text-align: right;
+    margin-left: auto;
     margin-right: -4px;
-    overflow: hidden;
 }
 
 .wampum-popup-close::before,
@@ -172,17 +174,19 @@
     -ms-flex-direction: column;-webkit-flex-direction: column;flex-direction: column;
     -ms-flex-pack: center;-webkit-justify-content: center;justify-content: center;
     -ms-flex-align: center;-ms-grid-row-align: center;-webkit-align-items: center;align-items: center;
+    padding: 2%;
 }
 
 .wampum-modal .wampum-popup-inner {
     display: block;
-    max-width: calc(100vw - 10%);
-    max-height: calc(100vh - 20%);
-    padding: 24px;
     margin: auto;
+    -webkit-animation: wampumscalein 0.5s;animation: wampumscalein 0.5s;
+}
+
+.wampum-modal .wampum-popup-content {
+    padding: 24px;
     box-shadow: 0 1px 3px rgba(0,0,0,.13);
     border-radius: 3px;
-    -webkit-animation: wampumscalein 0.5s;animation: wampumscalein 0.5s;
 }
 
 /* Slide Up */
@@ -197,9 +201,16 @@
 }
 
 .wampum-slideup .wampum-popup-inner {
+    position: relative; /* so wampumslideup works */
     width: 100%;
-    border-radius: 3px 3px 0 0;
+    max-width: calc(100vw - 10%);
+    max-height: calc(100vh - 20%);
     -webkit-animation: wampumslideup 0.5s;animation: wampumslideup 0.5s;
+}
+
+.wampum-slideup .wampum-popup-content {
+    padding: 20px;
+    border-radius: 3px 3px 0 0;
 }
 
 /**
@@ -211,6 +222,7 @@
 .wampum-popup.wampum-gallery .wampum-popup-content {
     padding: 0;
     border-radius: 0;
+    overflow: hidden;
 }
 
 .wampum-popup.wampum-gallery img {

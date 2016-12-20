@@ -52,15 +52,13 @@ final class Wampum_Popups_Setup {
 	private static $instance;
 
 	// Set popup counter
-	private $wampum_popups_counter = 0;
+	private $popup_counter = 0;
+
+	// Whether to use ouibounce or not
+	private $ouibounce = false;
 
 	// Set the wp_localize_script args variable
 	private $localize_args = array();
-
-	// public function __construct() {
-		// $this->localize_args['root'] = esc_url_raw( rest_url() );
-		// $this->localize_args['nonce'] = wp_create_nonce( 'wp_rest' );
-	// }
 
 	/**
 	 * Main Wampum_Popups_Setup Instance.
@@ -160,12 +158,15 @@ final class Wampum_Popups_Setup {
 		add_action( 'wp_enqueue_scripts', array( $this, 'stylesheets' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
 
+		// Force large image url in all gallery links
+		add_filter( 'wp_get_attachment_link', array( $this, 'gallery_image_url' ), 10, 4 );
+
 		// Register our shortcode
 		add_shortcode( 'wampum_popup', array( $this, 'wampum_popup_callback' ) );
 
-		add_filter( 'wp_get_attachment_link', array( $this, 'add_image_id' ), 10, 4 );
-
+		// Add new hook
 		add_action( 'wampum_popups', array( $this, 'gallery_popup' ) );
+
 		// Add our custom popup hook
 		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
 
@@ -175,17 +176,6 @@ final class Wampum_Popups_Setup {
 	}
 
 	function deactivate() {
-	}
-
-	function add_image_id( $html, $post_id, $size, $permalink ) {
-        // This returns an array of (url, width, height)
-		$image = wp_get_attachment_image_src( $post_id, 'large' );
-		return preg_replace( '/href=\'(.*?)\'/', 'href=\'' . $image[0] . '\'', $html );
-        // return $new_content;
-
-		// $link = isset($attr['link']) && 'file' == $attr['link'] ? wp_get_attachment_link($post_id, $size, false, false) : wp_get_attachment_link($post_id, $size, true, false);
-		// return str_replace( 'a href', 'a data-url="' . $post_id . '" href', $html );
-		// return str_replace( 'a href', 'a data-id="' . $post_id . '" href', $html );
 	}
 
 	/**
@@ -212,7 +202,20 @@ final class Wampum_Popups_Setup {
 	 */
 	function scripts() {
 		wp_register_script( 'ouibounce', WAMPUM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array(), '0.0.12', true );
-		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.js', 	array('ouibounce'), WAMPUM_POPUPS_VERSION, true );
+		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.js', 	array('jquery'), WAMPUM_POPUPS_VERSION, true );
+	}
+
+	/**
+	 * Force large image url in all gallery links
+	 *
+	 * @since   2.0.0
+	 *
+	 * @return  string  Image URL
+	 */
+	function gallery_image_url( $html, $post_id, $size, $permalink ) {
+        $size  = apply_filters( 'wampum_popups_gallery_image_size', 'large' );
+		$image = wp_get_attachment_image_src( $post_id, $size );
+		return preg_replace( '/href=\'(.*?)\'/', 'href=\'' . $image[0] . '\'', $html );
 	}
 
 	/**
@@ -225,7 +228,14 @@ final class Wampum_Popups_Setup {
 		if ( ! $content ) {
 			return;
 		}
-		return $this->get_wampum_popup( do_shortcode($content), $atts );
+		/**
+		 * Output popup to footer so it's not inline and weird
+		 * If inline, it was also too aggressively adopting .entry-content related styles
+		 */
+		add_action( 'wampum_popups', function () use ( $content, $atts ) {
+			echo $this->get_wampum_popup( do_shortcode($content), $atts );
+		});
+		return;
 	}
 
 	/**
@@ -262,14 +272,13 @@ final class Wampum_Popups_Setup {
 		$defaults = array(
 			'style'			=> 'modal', // 'modal' or 'slideup'
 			'time'			=> '4000',  // time in milliseconds
-			'type' 			=> null,   // 'exit' or 'timed' (REQUIRED)
+			'type' 			=> null,    // 'exit' or 'timed' (REQUIRED)
 			'close_button'	=> true,	// whether or not to show the close button
 			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
 			'logged_in'		=> false,	// whether or not to show only to logged in users
 			'logged_out'	=> false, 	// whether or not to show only to logged out users
 			'width'	 		=> '400px', // max-width of popup
 			'aggressive'	=> false,   // ouibounce - true
-			'callback'		=> false,   // ouibounce - function() { console.log('slim popups fired!'); }
 			'cookieExpire'	=> false,   // ouibounce - 7
 			'cookieDomain'	=> false,   // ouibounce - .example.com
 			'cookieName'	=> 'wampumPopupViewed',   // ouibounce - 'custom_cookie_name'
@@ -304,7 +313,13 @@ final class Wampum_Popups_Setup {
 		}
 
 		// Increment the counter so JS can fire the correct popup if multiple on the same page!
-		$this->wampum_popups_counter++;
+		$this->popup_counter++;
+
+		// If popup uses ouibounce, set as true
+		$ouibounce = array('exit','timed');
+		if ( in_array( $args['type'], $types ) ) {
+			$this->ouibounce = true;
+		}
 
 		/**
 		 * Add these args to a big localization array that saves each popup in its own index
@@ -312,10 +327,10 @@ final class Wampum_Popups_Setup {
 		 * Then add this as an index to the main localize object
 		 */
 		$localize_args = $this->get_localize_script_args( $args );
-		$this->localize_args[$this->wampum_popups_counter] = $localize_args;
+		$this->localize_args[$this->popup_counter] = $localize_args;
 
 		// Send it!
-		return $this->get_wampum_popup_html( $content, $args, $this->wampum_popups_counter );
+		return $this->get_wampum_popup_html( $content, $args, $this->popup_counter );
 
 	}
 
@@ -329,7 +344,7 @@ final class Wampum_Popups_Setup {
 				$output .= '<div class="wampum-popup-inner" style="max-width:' . $args['width'] . ';">';
 					// If close button, add it
 					if ( filter_var( $args['close_button'], FILTER_VALIDATE_BOOLEAN ) ) {
-						$output .= '<span class="wampum-popup-button wampum-popup-close"><span class="screen-reader-text">Close Popup</span></span>';
+						$output .= '<div class="wampum-popup-button wampum-popup-close"><span class="screen-reader-text">Close Popup</span></div>';
 					}
 					$output .= '<div class="wampum-popup-content">';
 					    $output .= $content;
@@ -360,7 +375,6 @@ final class Wampum_Popups_Setup {
 		);
 		$ouibounce_args = array(
 			'aggressive'	=> $args['aggressive'],
-			'callback'		=> $args['callback'],
 			'cookieExpire'	=> $args['cookieExpire'],
 			'cookieDomain'	=> $args['cookieDomain'],
 			'cookieName'	=> $args['cookieName'],
@@ -389,7 +403,6 @@ final class Wampum_Popups_Setup {
 		// Script defaults
 		$defaults = array(
 			'aggressive'	=> false,   // true
-			'callback'		=> false,   // function() { console.log('slim popups fired!'); }
 			'cookieExpire'	=> false,   // 7
 			'cookieDomain'	=> false,   // .example.com
 			'cookieName'	=> false,   // 'custom_cookie_name'
@@ -436,14 +449,16 @@ final class Wampum_Popups_Setup {
 		do_action( 'wampum_popups' );
 
 		// If we have at least 1 popup
-		if ( ( $this->wampum_popups_counter > 0 ) ) {
+		if ( ( $this->popup_counter > 0 ) ) {
 			$css = apply_filters( 'wampum_popups_load_css', '__return_true' );
 			if ( $css ) {
 				// Styles baby
 				wp_enqueue_style( 'wampum-popups' );
 			}
 			// Scripts baby
-			wp_enqueue_script( 'ouibounce' );
+			if ( $this->ouibounce ) {
+				wp_enqueue_script( 'ouibounce' );
+			}
 			wp_enqueue_script( 'wampum-popups' );
 			wp_localize_script( 'wampum-popups', 'wampum_popups_vars', $this->localize_args );
 		}
