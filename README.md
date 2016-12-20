@@ -12,16 +12,17 @@ A lightweight but flexible WordPress popups plugin utilizing [oiubounce](https:/
 ## Basic Usage
 Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
 
-**Shortcode**
+###Shortcode###
 ```
 [wampum_popup type="exit" style=modal] // HTML content here [/wampum_popup]
 ```
 
-**PHP function**
+###PHP functions###
 
 Use the `wampum_popups` hook to safely output a popup. This way, if the plugin gets deactivated your popup won't throw errors and/or break your site
 
 ```
+
 add_action( 'wampum_popups', 'prefix_do_wampum_popup' );
 function prefix_do_wampum_popup() {
 	// Bail if not a single post
@@ -34,18 +35,40 @@ function prefix_do_wampum_popup() {
 		'style'	=> 'slideup',
 	)
 	wampum_popup( $content, $args );
+
+	// Optionally use get_wampum_popup( $content, $args ); to return the popup
+	// Note: Scripts will already be enqueued
 }
+
+```
+
+**Manually launch a popup with a link/button right in your template**
+
+```
+
+$content = '// Some HTML';
+$args	 = array(
+	'type'	=> 'link', (or 'button')
+	'text'	=> 'Click Here',
+)
+wampum_popup_link( $content, $args );
+
+// Optionally use get_wampum_popup_link( $content, $args ); to return the link
+// Note: Scripts will already be enqueued and popup will be loaded in the DOM
+
 ```
 
 ## Shortcode parameters & PHP args
 
 ###type (**required**)###
 
-(string) exit|timed
+(string) exit|timed|link|button
 
 **Default** `null`
 
-Style of the popup. This is the only required parameter.
+Type of popup. This is the only required parameter.
+
+**Note:** 'exit' and 'timed' should be used with `wampum_popup()` hooked into `wampum_popups` action hook, while 'link' and 'button' should be used with `wampum_popup_link()` in your template, functions.php, etc..
 
 ---
 
@@ -76,6 +99,16 @@ Close popup by clicking outside the modal
 **Default** `'modal'`
 
 Style of the popup
+
+---
+
+###text###
+
+(string) 'Click Here'
+
+**Default** `null`
+
+The link/button text when using `wampum_popup_link()` function
 
 ---
 

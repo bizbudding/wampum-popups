@@ -4,6 +4,12 @@
 ( function ( document, $, undefined ) {
 	'use strict';
 
+	// Launch 'click' type popups manually
+	$('body').on( 'click', '.wampum-popup-link', function(e){
+		e.preventDefault();
+		$( '#wampum-popup-' + $(this).attr('data-popup') ).show();
+	});
+
 	// Find all the popups on the page
 	$.each( $( '.wampum-popup' ), function( key, value ) {
 
@@ -26,7 +32,7 @@
 		// Add class to the popup wrap
 		popup.addClass( 'wampum-' + popup_vars.style + ' wampum-' + popup_vars.type );
 
-		//
+		// Gallery popup (should only be used internally, when [gallery] shortcode is present)
 		if ( popup_vars.type == 'gallery' ) {
 
 			var content = popup.find('.wampum-popup-content');
@@ -89,7 +95,43 @@
 					resizeContent(img);
 				});
 
+				// Change image on arrow click
 				prev_button.on( 'click', function() {
+					doPreviousItem();
+				});
+
+				// Change image on arrow click
+				next_button.on( 'click', function() {
+					doNextItem();
+				});
+
+				// Change change with left/right arrow keys
+				$(document).keydown(function(e) {
+				    switch(e.which) {
+				        case 37: // left
+				        doPreviousItem();
+				        break;
+
+				        case 38: // up
+				        break;
+
+				        case 39: // right
+				        doNextItem();
+				        break;
+
+				        case 40: // down
+				        break;
+
+				        default: return; // exit this handler for other keys
+				    }
+				    e.preventDefault(); // prevent the default action (scroll / move caret)
+				});
+
+				function doPreviousItem() {
+
+					if ( ! prev_item.is(':visible') ) {
+						return;
+					}
 
 					// Set the new current item
 					current = prev_item;
@@ -113,10 +155,13 @@
 					} else {
 						next_button.hide();
 					}
+				}
 
-				});
+				function doNextItem() {
 
-				next_button.on( 'click', function() {
+					if ( ! next_item.is(':visible') ) {
+						return;
+					}
 
 					// Set the new current item
 					current = next_item;
@@ -140,8 +185,7 @@
 					} else {
 						next_button.hide();
 					}
-
-				});
+				}
 
 			});
 

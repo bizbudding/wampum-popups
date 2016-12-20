@@ -24,17 +24,38 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Main function to create a popup
+ * Main functions to create a popup
  *
  * @since  1.0.0
  *
- * @param  string  $content  File name (one word, no hyphens or underscores)
+ * @param  string  $content  The content to output in the popup
  * @param  array   $args	 Plugin options (type, style, time)
- *
- * @return void
  */
 function wampum_popup( $content, $args = array() ) {
-	Wampum_Popups()->wampum_popup( $content, $args );
+	echo Wampum_Popups()->get_wampum_popup( $content, $args );
+}
+
+function get_wampum_popup( $content, $args = array() ) {
+	return Wampum_Popups()->get_wampum_popup( $content, $args );
+}
+
+/**
+ * Main functions to create a direct link to launch a popup
+ * Type can only be 'link' or 'button'
+ *
+ * @since  2.0.0
+ *
+ * @param  string  $content  The content to output in the popup
+ * @param  array   $args	 Plugin options (type & text only)
+ */
+function wampum_popup_link( $content, $args = array() ) {
+	// Params are backwards cause shortcodes have optional $content second
+	echo Wampum_Popups()->wampum_popup_shortcode( $args, $content );
+}
+
+function get_wampum_popup_link( $content, $args = array() ) {
+	// Params are backwards cause shortcodes have optional $content second
+	return Wampum_Popups()->wampum_popup_shortcode( $args, $content );
 }
 
 if ( ! class_exists( 'Wampum_Popups_Setup' ) ) :
@@ -76,7 +97,6 @@ final class Wampum_Popups_Setup {
 			self::$instance = new Wampum_Popups_Setup;
 			// Methods
 			self::$instance->setup_constants();
-			self::$instance->includes();
 			self::$instance->setup();
 		}
 		return self::$instance;
@@ -139,20 +159,15 @@ final class Wampum_Popups_Setup {
 			define( 'WAMPUM_POPUPS_BASENAME', dirname( plugin_basename( __FILE__ ) ) );
 		}
 	}
+
 	/**
-	 * Include required files.
+	 * Plugin hooks, filters, and shortcode
 	 *
-	 * @access private
-	 * @since 1.0.0
+	 * @since  1.0.0
+	 *
 	 * @return void
 	 */
-	private function includes() {
-	}
-
 	function setup() {
-
-		register_activation_hook( __FILE__,   array( $this, 'activate' ) );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
 
 		// Register styles and scripts
 		add_action( 'wp_enqueue_scripts', array( $this, 'stylesheets' ) );
@@ -162,7 +177,7 @@ final class Wampum_Popups_Setup {
 		add_filter( 'wp_get_attachment_link', array( $this, 'gallery_image_url' ), 10, 4 );
 
 		// Register our shortcode
-		add_shortcode( 'wampum_popup', array( $this, 'wampum_popup_callback' ) );
+		add_shortcode( 'wampum_popup', array( $this, 'wampum_popup_shortcode' ) );
 
 		// Add new hook
 		add_action( 'wampum_popups', array( $this, 'gallery_popup' ) );
@@ -170,12 +185,6 @@ final class Wampum_Popups_Setup {
 		// Add our custom popup hook
 		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
 
-	}
-
-	function activate() {
-	}
-
-	function deactivate() {
 	}
 
 	/**
@@ -224,34 +233,52 @@ final class Wampum_Popups_Setup {
 	 *
 	 * @since  2.0.0
 	 */
-	function wampum_popup_callback( $atts, $content = null ) {
-		if ( ! $content ) {
+	function wampum_popup_shortcode( $atts, $content = null ) {
+
+		// Bail if no content
+		if ( ! trim($content) ) {
 			return;
 		}
+
+		// Get popup as a variable so it updates popup_counter
+		$popup = $this->get_wampum_popup( do_shortcode(trim($content)), $atts );
+
+		// Bail if no popup
+		if ( ! $popup ) {
+			return;
+		}
+
 		/**
-		 * Output popup to footer so it's not inline and weird
+		 * Echo popup to footer so it's not inline and weird
 		 * If inline, it was also too aggressively adopting .entry-content related styles
 		 */
-		add_action( 'wampum_popups', function () use ( $content, $atts ) {
-			echo $this->get_wampum_popup( do_shortcode($content), $atts );
+		add_action( 'wampum_popups', function() use ( $popup ) {
+			echo $popup;
 		});
-		return;
-	}
 
-	/**
-	 * Enqueues scripts and outputs a popup
-	 *
-	 * @param  string  $content  HTML to be used in the popup
-	 * @param  array   $args     All the popup args
-	 *
-	 * @return string  popup HTML
-	 */
-	function wampum_popup( $content = null, $args = array() ) {
-		echo $this->get_wampum_popup( $content, $args );
+		// If popup is a link or button type, return them linked text
+		$output = '';
+		$click  = array('link','button');
+		if ( in_array( $atts['type'], $click ) ) {
+			if ( isset($atts['text']) && ! empty($atts['text']) ) {
+				if ( 'link' == $atts['type'] ) {
+					$classes = 'wampum-popup-link';
+				} elseif ( 'button' == $atts['type'] ) {
+					$classes = 'wampum-popup-link button';
+				}
+				$output = sprintf( '<a class="%s" href="#" data-popup="%s">%s</a>',
+					$classes,
+					$this->popup_counter,
+					sanitize_text_field($atts['text'])
+				);
+			}
+		}
+		return $output;
 	}
 
 	/**
 	 * Get a wampum popup
+	 * Enqueues scripts
 	 * Returns the popup so we can use it in a shortcode
 	 *
 	 * @since  1.0.2
@@ -270,13 +297,13 @@ final class Wampum_Popups_Setup {
 
 		// Popup args
 		$defaults = array(
-			'style'			=> 'modal', // 'modal' or 'slideup'
-			'time'			=> '4000',  // time in milliseconds
-			'type' 			=> null,    // 'exit' or 'timed' (REQUIRED)
+			'type' 			=> null,    // 'exit' or 'timed' or 'link' or 'button' or 'gallery (internal only)' (REQUIRED)
 			'close_button'	=> true,	// whether or not to show the close button
 			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
 			'logged_in'		=> false,	// whether or not to show only to logged in users
 			'logged_out'	=> false, 	// whether or not to show only to logged out users
+			'style'			=> 'modal', // 'modal' or 'slideup'
+			'time'			=> '4000',  // time in milliseconds
 			'width'	 		=> '400px', // max-width of popup
 			'aggressive'	=> false,   // ouibounce - true
 			'cookieExpire'	=> false,   // ouibounce - 7
@@ -290,7 +317,7 @@ final class Wampum_Popups_Setup {
 		$args = shortcode_atts( $defaults, $args, 'wampum_popup' );
 
 		// Bail if we don't have a type, since it's required!
-		$types = array('click','exit','gallery','timed');
+		$types = array('link','button','exit','gallery','timed');
 		if ( ! in_array( $args['type'], $types ) ) {
 			return;
 		}
@@ -305,21 +332,26 @@ final class Wampum_Popups_Setup {
 			return;
 		}
 
-		// Bail if popup is not aggressive and cookie has already been viewed
-		$aggressive	= filter_var( $args['aggressive'], FILTER_VALIDATE_BOOLEAN );
-		$viewed		= isset($_COOKIE[$args['cookieName']]) && filter_var( $_COOKIE[$args['cookieName']], FILTER_VALIDATE_BOOLEAN ) == true ? true : false;
-		if ( ! $aggressive && $viewed ) {
-			return;
+		// Array of types that use ouibounce
+		$ouibounce = array('exit','timed');
+
+		// If an ouibounce popup
+		if ( in_array( $args['type'], $ouibounce ) ) {
+
+			// Bail if popup is not aggressive and cookie has already been viewed
+			$aggressive	= filter_var( $args['aggressive'], FILTER_VALIDATE_BOOLEAN );
+			$viewed		= isset($_COOKIE[$args['cookieName']]) && filter_var( $_COOKIE[$args['cookieName']], FILTER_VALIDATE_BOOLEAN ) == true ? true : false;
+			if ( ! $aggressive && $viewed ) {
+				return;
+			}
+
+			// If popup uses ouibounce, set as true
+			$this->ouibounce = true;
+
 		}
 
 		// Increment the counter so JS can fire the correct popup if multiple on the same page!
 		$this->popup_counter++;
-
-		// If popup uses ouibounce, set as true
-		$ouibounce = array('exit','timed');
-		if ( in_array( $args['type'], $types ) ) {
-			$this->ouibounce = true;
-		}
 
 		/**
 		 * Add these args to a big localization array that saves each popup in its own index
