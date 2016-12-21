@@ -122,6 +122,10 @@
 				        case 40: // down
 				        break;
 
+				        case 27: // esc
+				        closePopup(popup);
+				        break;
+
 				        default: return; // exit this handler for other keys
 				    }
 				    e.preventDefault(); // prevent the default action (scroll / move caret)
@@ -228,7 +232,7 @@
 
 		// Close if clicking the close button
 		$( popup ).on( 'click', '.wampum-popup-close', function() {
-			doClosedPopup( popup );
+			closePopup( popup );
 		});
 
 		// If close_outside is true
@@ -247,7 +251,7 @@
 		         * If click is not on a child of our popup
 		         */
 		        if ( ! ( $(e.target).hasClass('wampum-popup-content') || $(e.target).parents().hasClass('wampum-popup-content') ) ) {
-		        	doClosedPopup( popup );
+		        	closePopup( popup );
 		        }
 		    });
 
@@ -268,7 +272,7 @@
 	}
 
 	// Helper function to do the closing of a modal
-	function doClosedPopup( popup ) {
+	function closePopup( popup ) {
         popup.fadeOut('fast');
         // Disable ouibounce object if it was set
 		if ( typeof _ouibounce != 'undefined' ) {
