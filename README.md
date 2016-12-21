@@ -1,7 +1,9 @@
 # Wampum Popups
 A lightweight but flexible WordPress popups plugin utilizing [oiubounce](https://github.com/carlsednaoui/ouibounce).
 * Use a simple shortcode (or PHP function) to create 1 or more popups (or slideups) throughout your website
-* Stores an expiring cookie in the browser so it won't continue to display after a user closes it
+* Popup types include exit itent, timed, link, and button
+* Automatically works with WordPress galleries (when set to link to file or attachment page)
+* Default exit intent and timed popups store an expiring cookie in the browser so it won't continue to display after a user closes it
 * Various options allow fine-tuning (see below)
 * Easy plugin updates in the WordPress Dashboard via [GitHub Updater plugin](https://github.com/afragen/github-updater)
 
@@ -13,8 +15,18 @@ A lightweight but flexible WordPress popups plugin utilizing [oiubounce](https:/
 Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
 
 ###Shortcode###
+
 ```
-[wampum_popup type="exit" style=modal] // HTML content here [/wampum_popup]
+[wampum_popup type="exit" style="modal"] // HTML content here [/wampum_popup]
+```
+
+####Manually launch a popup with a link/button in the WP editor####
+
+```
+[wampum_popup type="link" text="Click Here"] // HTML content here [/wampum_popup]
+```
+```
+[wampum_popup type="button" text="Click Here"] // HTML content here [/wampum_popup]
 ```
 
 ###PHP functions###
@@ -22,41 +34,42 @@ Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webst
 Use the `wampum_popups` hook to safely output a popup. This way, if the plugin gets deactivated your popup won't throw errors and/or break your site
 
 ```
-
 add_action( 'wampum_popups', 'prefix_do_wampum_popup' );
 function prefix_do_wampum_popup() {
+
 	// Bail if not a single post
 	if ( ! is_singular('post') ) {
 		return;
 	}
+
 	$content = '// Some HTML';
-	$args	 = array(
+
+	$args = array(
 		'type'	=> 'timed',
 		'style'	=> 'slideup',
 	)
 	wampum_popup( $content, $args );
 
-	// Optionally use get_wampum_popup( $content, $args ); to return the popup
-	// Note: Scripts will already be enqueued
 }
+```
+Optionally use `get_wampum_popup( $content, $args );` to return the popup
+
+**Note:** Scripts will already be enqueued
+
+####Manually launch a popup with a link/button in your PHP template####
 
 ```
-
-**Manually launch a popup with a link/button right in your template**
-
-```
-
 $content = '// Some HTML';
 $args	 = array(
 	'type'	=> 'link', (or 'button')
 	'text'	=> 'Click Here',
 )
 wampum_popup_link( $content, $args );
-
-// Optionally use get_wampum_popup_link( $content, $args ); to return the link
-// Note: Scripts will already be enqueued and popup will be loaded in the DOM
-
 ```
+
+Optionally use `get_wampum_popup_link( $content, $args );` to return the link
+
+**Note:** Scripts will already be enqueued and popup will be loaded in the DOM
 
 ## Shortcode parameters & PHP args
 
