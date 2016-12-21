@@ -81,7 +81,7 @@ Wampum Popups filters the attachement image or permalink URL and uses the 'large
 
 ###type (**required**)###
 
-(string) exit|timed|link|button
+(string) 'exit|timed|link|button'
 
 **Default** `null`
 
@@ -113,7 +113,7 @@ Close popup by clicking outside the modal
 
 ###style###
 
-(string) modal|slideup
+(string) 'modal|slideup'
 
 **Default** `'modal'`
 
@@ -165,9 +165,9 @@ Show only to logged out users
 
 ###width###
 
-(string) 400px|auto|calc(100vw - 5%)
+(string) '400px|auto|calc(100vw - 5%)''
 
-**Default** `400px`
+**Default** `'400px'`
 
 Max width of the popup, formatted for CSS `max-width: 400px;` spec. Helps for custom designs, larger images, videos, or to make slideups not so weird if too big.
 
