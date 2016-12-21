@@ -15,7 +15,7 @@
  * Text Domain:        wampum-popups
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
- * Version:            0.0.1
+ * Version:            2.0.0
  * GitHub Plugin URI:  https://github.com/JiveDig/wampum-popups
  * GitHub Branch:	   master
  */
@@ -136,7 +136,7 @@ final class Wampum_Popups_Setup {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'WAMPUM_POPUPS_VERSION' ) ) {
-			define( 'WAMPUM_POPUPS_VERSION', '0.0.1' );
+			define( 'WAMPUM_POPUPS_VERSION', '2.0.0' );
 		}
 		// Plugin Folder Path.
 		if ( ! defined( 'WAMPUM_POPUPS_PLUGIN_DIR' ) ) {
@@ -197,7 +197,7 @@ final class Wampum_Popups_Setup {
 	 * @return null
 	 */
 	function stylesheets() {
-	    wp_register_style( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'css/wampum-popups.css', array(), WAMPUM_POPUPS_VERSION );
+	    wp_register_style( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'css/wampum-popups.min.css', array(), WAMPUM_POPUPS_VERSION );
 	}
 
 	/**
@@ -211,7 +211,7 @@ final class Wampum_Popups_Setup {
 	 */
 	function scripts() {
 		wp_register_script( 'ouibounce', WAMPUM_POPUPS_PLUGIN_URL . 'js/ouibounce.min.js', array(), '0.0.12', true );
-		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.js', 	array('jquery'), WAMPUM_POPUPS_VERSION, true );
+		wp_register_script( 'wampum-popups', WAMPUM_POPUPS_PLUGIN_URL . 'js/wampum-popups.min.js', 	array('jquery'), WAMPUM_POPUPS_VERSION, true );
 	}
 
 	/**
