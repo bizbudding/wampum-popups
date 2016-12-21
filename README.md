@@ -170,16 +170,6 @@ Force the popup to show, always. Don't be annoying.
 
 ---
 
-###aggressive###
-
-(boolean) true|false
-
-**Default** `false`
-
-Force the popup to show, always. Don't be annoying.
-
----
-
 ###Other available options/parameters###
 
 Read about these options on the [ouibounce wiki](https://github.com/carlsednaoui/ouibounce/blob/master/README.md)
