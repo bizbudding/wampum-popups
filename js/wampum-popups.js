@@ -122,10 +122,6 @@
 				        case 40: // down
 				        break;
 
-				        case 27: // esc
-				        closePopup(popup);
-				        break;
-
 				        default: return; // exit this handler for other keys
 				    }
 				    e.preventDefault(); // prevent the default action (scroll / move caret)
@@ -256,6 +252,18 @@
 		    });
 
 		}
+
+		// Close popup with esc key
+		$(document).keydown(function(e) {
+		    switch(e.which) {
+		        case 27: // esc
+		        closePopup(popup);
+		        break;
+
+		        default: return; // exit this handler for other keys
+		    }
+		    e.preventDefault(); // prevent the default action (scroll / move caret)
+		});
 
 	}); // end each
 
