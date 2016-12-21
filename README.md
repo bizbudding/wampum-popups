@@ -71,6 +71,12 @@ Optionally use `get_wampum_popup_link( $content, $args );` to return the link
 
 **Note:** Scripts will already be enqueued and popup will be loaded in the DOM
 
+###WordPress Galleries###
+
+Create a gallery and "Link To" either "Attachment Page" (not sure why anyone would ever do this) or "Media File".
+
+Wampum Popups filters the attachement image or permalink URL and uses the 'large' image size in place.
+
 ## Shortcode parameters & PHP args
 
 ###type (**required**)###
