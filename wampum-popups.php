@@ -253,7 +253,7 @@ final class Wampum_Popups_Setup {
 		 * If inline, it was also too aggressively adopting .entry-content related styles
 		 */
 		add_action( 'wampum_popups', function() use ( $popup ) {
-			echo wpautop($popup);
+			echo $popup;
 		});
 
 		// If popup is a link or button type, return them linked text

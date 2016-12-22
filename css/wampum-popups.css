@@ -32,16 +32,6 @@
     cursor: auto;
 }
 
-.wampum-popup-inner ::-moz-selection {
-    background-color: transparent;
-    color: inherit;
-}
-
-.wampum-popup-inner ::selection {
-    background-color: transparent;
-    color: inherit;
-}
-
 .wampum-popup-content {
     background-color: #fff;
     max-width: calc(100vw - 10%);
@@ -218,6 +208,16 @@
 --------------------------------------------- */
 
 /* Gallery */
+
+.wampum-gallery .wampum-popup-inner ::-moz-selection {
+    background-color: transparent;
+    color: inherit;
+}
+
+.wampum-gallery .wampum-popup-inner ::selection {
+    background-color: transparent;
+    color: inherit;
+}
 
 .wampum-popup.wampum-gallery .wampum-popup-content {
     padding: 0;
