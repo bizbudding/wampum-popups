@@ -47,7 +47,7 @@ function prefix_do_wampum_popup() {
 	$args = array(
 		'type'	=> 'timed',
 		'style'	=> 'slideup',
-	)
+	);
 	wampum_popup( $content, $args );
 
 }
@@ -63,7 +63,7 @@ $content = '// Some HTML';
 $args	 = array(
 	'type'	=> 'link', (or 'button')
 	'text'	=> 'Click Here',
-)
+);
 wampum_popup_link( $content, $args );
 ```
 
@@ -228,7 +228,7 @@ function prefix_do_wampum_popups() {
 			'cookieName' => 'prefix_posts_popup_viewed'
 			'type'		 => 'exit',
 			'style'		 => 'modal',
-		)
+		);
 		wampum_popup( $content, $args );
 	}
 
@@ -239,7 +239,7 @@ function prefix_do_wampum_popups() {
 			'cookieName' => 'prefix_pages_popup_viewed'
 			'type'		 => 'timed',
 			'style'		 => 'slideup',
-		)
+		);
 		wampum_popup( $content, $args );
 	}
 
