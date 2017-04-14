@@ -9,14 +9,16 @@
  * @wordpress-plugin
  * Plugin Name:        Wampum - Popups
  * Description: 	   A lightweight but flexible WordPress popups plugin
- * Plugin URI:         https://github.com/JiveDig/wampum-popups
+ * Plugin URI:         https://github.com/bizbudding/wampum-popups
  * Author:             Mike Hemberger
  * Author URI:         https://bizbudding.com
  * Text Domain:        wampum-popups
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
- * Version:            2.0.0
- * GitHub Plugin URI:  https://github.com/JiveDig/wampum-popups
+ *
+ * Version:            2.0.1
+ *
+ * GitHub Plugin URI:  https://github.com/bizbudding/wampum-popups
  * GitHub Branch:	   master
  */
 
@@ -136,7 +138,7 @@ final class Wampum_Popups_Setup {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'WAMPUM_POPUPS_VERSION' ) ) {
-			define( 'WAMPUM_POPUPS_VERSION', '2.0.0' );
+			define( 'WAMPUM_POPUPS_VERSION', '2.0.1' );
 		}
 		// Plugin Folder Path.
 		if ( ! defined( 'WAMPUM_POPUPS_PLUGIN_DIR' ) ) {
@@ -235,13 +237,16 @@ final class Wampum_Popups_Setup {
 	 */
 	function wampum_popup_shortcode( $atts, $content = null ) {
 
+		// Get popup content, while parsing shortcodes
+		$popup_content = do_shortcode(trim($content));
+
 		// Bail if no content
-		if ( ! trim($content) ) {
+		if ( empty( $popup_content ) ) {
 			return;
 		}
 
 		// Get popup as a variable so it updates popup_counter
-		$popup = $this->get_wampum_popup( do_shortcode(trim($content)), $atts );
+		$popup = $this->get_wampum_popup( $popup_content, $atts );
 
 		// Bail if no popup
 		if ( ! $popup ) {
@@ -518,5 +523,6 @@ endif; // End if class_exists check.
 function Wampum_Popups() {
 	return Wampum_Popups_Setup::instance();
 }
+
 // Get Wampum_Popups_Setup Running.
 Wampum_Popups();

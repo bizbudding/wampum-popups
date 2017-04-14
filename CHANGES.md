@@ -1,3 +1,6 @@
+#### 2.0.1
+* Update plugin header to point to new repo in bizbudding GitHub organization
+
 #### 2.0.0
 * Convert name to match wampum plugin suite
 * Full rebuild, with all new shortcodes, a some new parameters
