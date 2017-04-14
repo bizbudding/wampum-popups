@@ -14,13 +14,13 @@ A lightweight but flexible WordPress popups plugin utilizing [oiubounce](https:/
 ## Basic Usage
 Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn) is helpful as it lets you manually clear individual cookies 1 at a time
 
-###Shortcode###
+### Shortcode
 
 ```
 [wampum_popup type="exit" style="modal"] // HTML content here [/wampum_popup]
 ```
 
-####Manually launch a popup with a link/button in the WP editor####
+#### Manually launch a popup with a link/button in the WP editor
 
 ```
 [wampum_popup type="link" text="Click Here"] // HTML content here [/wampum_popup]
@@ -29,7 +29,7 @@ Tip: A browser extention like [Cookie Inspector](https://chrome.google.com/webst
 [wampum_popup type="button" text="Click Here"] // HTML content here [/wampum_popup]
 ```
 
-###PHP functions###
+### PHP functions
 
 Use the `wampum_popups` hook to safely output a popup. This way, if the plugin gets deactivated your popup won't throw errors and/or break your site
 
@@ -56,7 +56,7 @@ Optionally use `get_wampum_popup( $content, $args );` to return the popup
 
 **Note:** Scripts will already be enqueued
 
-####Manually launch a popup with a link/button in your PHP template####
+#### Manually launch a popup with a link/button in your PHP template
 
 ```
 $content = '// Some HTML';
@@ -71,7 +71,7 @@ Optionally use `get_wampum_popup_link( $content, $args );` to return the link
 
 **Note:** Scripts will already be enqueued and popup will be loaded in the DOM
 
-###WordPress Galleries###
+### WordPress Galleries
 
 Create a gallery and "Link To" either "Attachment Page" (not sure why anyone would ever do this) or "Media File".
 
@@ -79,7 +79,7 @@ Wampum Popups filters the attachement image or permalink URL and uses the 'large
 
 ## Shortcode parameters & PHP args
 
-###type (**required**)###
+### type (**required**)
 
 (string) 'exit|timed|link|button'
 
@@ -91,7 +91,7 @@ Type of popup. This is the only required parameter.
 
 ---
 
-###close_button###
+### close_button
 
 (boolean) true|false
 
@@ -101,7 +101,7 @@ Show the close button
 
 ---
 
-###close_outside###
+### close_outside
 
 (boolean) true|false
 
@@ -111,7 +111,7 @@ Close popup by clicking outside the modal
 
 ---
 
-###style###
+### style
 
 (string) 'modal|slideup'
 
@@ -121,7 +121,7 @@ Style of the popup
 
 ---
 
-###text###
+### text
 
 (string) 'Click Here'
 
@@ -131,7 +131,7 @@ The link/button text when using `wampum_popup_link()` function
 
 ---
 
-###time###
+### time
 
 (integer) 4000
 
@@ -141,11 +141,11 @@ Time in milliseconds. 4000ms = 4s
 
 ---
 
-###logged_in and logged_out###
+### logged_in and logged_out
 
 **Note:** if logged_in and logged_out are both true, the popup will never load... naturally
 
-####logged_in####
+#### logged_in
 
 (boolean) true|false
 
@@ -153,7 +153,7 @@ Time in milliseconds. 4000ms = 4s
 
 Show only to logged in users
 
-####logged_out####
+#### logged_out
 
 (boolean) true|false
 
@@ -163,7 +163,7 @@ Show only to logged out users
 
 ---
 
-###width###
+### width
 
 (string) '400px|auto|calc(100vw - 5%)''
 
@@ -173,13 +173,13 @@ Max width of the popup, formatted for CSS `max-width: 400px;` spec. Helps for cu
 
 ---
 
-## ouibounce args ##
+## ouibounce args
 
 These args are specific to the [oiubounce](https://github.com/carlsednaoui/ouibounce) script
 
 Most of these won't be used very often, so only a few are documented here
 
-###aggressive###
+### aggressive
 
 (boolean) true|false
 
@@ -189,7 +189,7 @@ Force the popup to show, always. Don't be annoying.
 
 ---
 
-###Other available options/parameters###
+### Other available options/parameters
 
 Read about these options on the [ouibounce wiki](https://github.com/carlsednaoui/ouibounce/blob/master/README.md)
 
@@ -202,7 +202,7 @@ Read about these options on the [ouibounce wiki](https://github.com/carlsednaoui
 * 'sitewide'
 * 'timer'
 
-##Advanced Usage##
+## Advanced Usage
 
 This example showing the ability to use multiple/different popups on the same site.
 
