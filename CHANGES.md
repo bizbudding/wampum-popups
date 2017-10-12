@@ -1,3 +1,6 @@
+#### 2.1.0
+* Added: Included updater script.
+
 #### 2.0.1
 * Update plugin header to point to new repo in bizbudding GitHub organization
 

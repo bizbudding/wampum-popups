@@ -8,7 +8,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:        Wampum - Popups
- * Description: 	   A lightweight but flexible WordPress popups plugin
+ * Description:        A lightweight but flexible WordPress popups plugin
  * Plugin URI:         https://github.com/bizbudding/wampum-popups
  * Author:             Mike Hemberger
  * Author URI:         https://bizbudding.com
@@ -16,10 +16,10 @@
  * License:            GPL-2.0+
  * License URI:        http://www.gnu.org/licenses/gpl-2.0.txt
  *
- * Version:            2.0.1
+ * Version:            2.1.0
  *
  * GitHub Plugin URI:  https://github.com/bizbudding/wampum-popups
- * GitHub Branch:	   master
+ * GitHub Branch:      master
  */
 
 // Exit if accessed directly.
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * @since  1.0.0
  *
  * @param  string  $content  The content to output in the popup
- * @param  array   $args	 Plugin options (type, style, time)
+ * @param  array   $args     Plugin options (type, style, time)
  */
 function wampum_popup( $content, $args = array() ) {
 	echo Wampum_Popups()->get_wampum_popup( $content, $args );
@@ -48,7 +48,7 @@ function get_wampum_popup( $content, $args = array() ) {
  * @since  2.0.0
  *
  * @param  string  $content  The content to output in the popup
- * @param  array   $args	 Plugin options (type & text only)
+ * @param  array   $args     Plugin options (type & text only)
  */
 function wampum_popup_link( $content, $args = array() ) {
 	// Params are backwards cause shortcodes have optional $content second
@@ -138,7 +138,7 @@ final class Wampum_Popups_Setup {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'WAMPUM_POPUPS_VERSION' ) ) {
-			define( 'WAMPUM_POPUPS_VERSION', '2.0.1' );
+			define( 'WAMPUM_POPUPS_VERSION', '2.1.0' );
 		}
 		// Plugin Folder Path.
 		if ( ! defined( 'WAMPUM_POPUPS_PLUGIN_DIR' ) ) {
@@ -187,6 +187,17 @@ final class Wampum_Popups_Setup {
 		// Add our custom popup hook
 		add_action( 'wp_footer', array( $this, 'popups_hook' ) );
 
+		/**
+		 * Setup the updater.
+		 *
+		 * @uses    https://github.com/YahnisElsts/plugin-update-checker/
+		 *
+		 * @return  void
+		 */
+		if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+			require_once WAMPUM_POPUPS_INCLUDES_DIR . 'vendor/plugin-update-checker/plugin-update-checker.php';
+		}
+		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/bizbudding/wampum-popups/', __FILE__, 'wampum-popups' );
 	}
 
 	/**
@@ -224,7 +235,7 @@ final class Wampum_Popups_Setup {
 	 * @return  string  Image URL
 	 */
 	function gallery_image_url( $html, $post_id, $size, $permalink ) {
-        $size  = apply_filters( 'wampum_popups_gallery_image_size', 'large' );
+		$size  = apply_filters( 'wampum_popups_gallery_image_size', 'large' );
 		$image = wp_get_attachment_image_src( $post_id, $size );
 		return preg_replace( '/href=\'(.*?)\'/', 'href=\'' . $image[0] . '\'', $html );
 	}
@@ -302,22 +313,22 @@ final class Wampum_Popups_Setup {
 
 		// Popup args
 		$defaults = array(
-			'type' 			=> null,    // 'exit' or 'timed' or 'link' or 'button' or 'gallery (internal only)' (REQUIRED)
-			'close_button'	=> true,	// whether or not to show the close button
-			'close_outside'	=> true,	// whether or not to allow close by clicking outside the modal
-			'logged_in'		=> false,	// whether or not to show only to logged in users
-			'logged_out'	=> false, 	// whether or not to show only to logged out users
-			'style'			=> 'modal', // 'modal' or 'slideup'
-			'time'			=> '4000',  // time in milliseconds
-			'width'	 		=> '400px', // max-width of popup
-			'aggressive'	=> false,   // ouibounce - true
-			'cookieExpire'	=> false,   // ouibounce - 7
-			'cookieDomain'	=> false,   // ouibounce - .example.com
-			'cookieName'	=> 'wampumPopupViewed',   // ouibounce - 'custom_cookie_name'
-			'delay'			=> false,   // ouibounce - 100
-			'sensitivity'	=> false,   // ouibounce - 40
-			'sitewide'		=> true,    // ouibounce - true (don't be annoying)
-			'timer'			=> false,   // ouibounce - 10
+			'type'          => null,    // 'exit' or 'timed' or 'link' or 'button' or 'gallery (internal only)' (REQUIRED)
+			'close_button'  => true,    // whether or not to show the close button
+			'close_outside' => true,    // whether or not to allow close by clicking outside the modal
+			'logged_in'     => false,   // whether or not to show only to logged in users
+			'logged_out'    => false,   // whether or not to show only to logged out users
+			'style'         => 'modal', // 'modal' or 'slideup'
+			'time'          => '4000',  // time in milliseconds
+			'width'         => '400px', // max-width of popup
+			'aggressive'    => false,   // ouibounce - true
+			'cookieExpire'  => false,   // ouibounce - 7
+			'cookieDomain'  => false,   // ouibounce - .example.com
+			'cookieName'    => 'wampumPopupViewed',   // ouibounce - 'custom_cookie_name'
+			'delay'         => false,   // ouibounce - 100
+			'sensitivity'   => false,   // ouibounce - 40
+			'sitewide'      => true,    // ouibounce - true (don't be annoying)
+			'timer'         => false,   // ouibounce - 10
 		);
 		$args = shortcode_atts( $defaults, $args, 'wampum_popup' );
 
@@ -344,8 +355,8 @@ final class Wampum_Popups_Setup {
 		if ( in_array( $args['type'], $ouibounce ) ) {
 
 			// Bail if popup is not aggressive and cookie has already been viewed
-			$aggressive	= filter_var( $args['aggressive'], FILTER_VALIDATE_BOOLEAN );
-			$viewed		= isset($_COOKIE[$args['cookieName']]) && filter_var( $_COOKIE[$args['cookieName']], FILTER_VALIDATE_BOOLEAN ) == true ? true : false;
+			$aggressive = filter_var( $args['aggressive'], FILTER_VALIDATE_BOOLEAN );
+			$viewed     = isset($_COOKIE[$args['cookieName']]) && filter_var( $_COOKIE[$args['cookieName']], FILTER_VALIDATE_BOOLEAN ) == true ? true : false;
 			if ( ! $aggressive && $viewed ) {
 				return;
 			}
@@ -403,26 +414,26 @@ final class Wampum_Popups_Setup {
 	 */
 	function get_localize_script_args( $args ) {
 		$popup_args = array(
-			'close_button'	=> $args['close_button'],
-			'close_outside'	=> $args['close_outside'],
-			'style'			=> $args['style'],
-			'time'			=> $args['time'],
-			'type' 			=> $args['type'],
-			'width'	 		=> $args['width'],
+			'close_button'  => $args['close_button'],
+			'close_outside' => $args['close_outside'],
+			'style'         => $args['style'],
+			'time'          => $args['time'],
+			'type'          => $args['type'],
+			'width'         => $args['width'],
 		);
 		$ouibounce_args = array(
-			'aggressive'	=> $args['aggressive'],
-			'cookieExpire'	=> $args['cookieExpire'],
-			'cookieDomain'	=> $args['cookieDomain'],
-			'cookieName'	=> $args['cookieName'],
-			'delay'			=> $args['delay'],
-			'sensitivity'	=> $args['sensitivity'],
-			'sitewide'		=> $args['sitewide'],
-			'timer'			=> $args['timer'],
+			'aggressive'   => $args['aggressive'],
+			'cookieExpire' => $args['cookieExpire'],
+			'cookieDomain' => $args['cookieDomain'],
+			'cookieName'   => $args['cookieName'],
+			'delay'        => $args['delay'],
+			'sensitivity'  => $args['sensitivity'],
+			'sitewide'     => $args['sitewide'],
+			'timer'        => $args['timer'],
 		);
 		return array(
-			'wampumpopups'	=> $popup_args,
-			'ouibounce'		=> $this->ouibounce_args( $ouibounce_args ),
+			'wampumpopups' => $popup_args,
+			'ouibounce'    => $this->ouibounce_args( $ouibounce_args ),
 		);
 	}
 
@@ -439,14 +450,14 @@ final class Wampum_Popups_Setup {
 		$args = array();
 		// Script defaults
 		$defaults = array(
-			'aggressive'	=> false,   // true
-			'cookieExpire'	=> false,   // 7
-			'cookieDomain'	=> false,   // .example.com
-			'cookieName'	=> false,   // 'custom_cookie_name'
-			'delay'			=> false,   // 100
-			'sensitivity'	=> false,   // 40
-			'sitewide'		=> true,    // true (don't be annoying)
-			'timer'			=> false,   // 10
+			'aggressive'   => false,   // true
+			'cookieExpire' => false,   // 7
+			'cookieDomain' => false,   // .example.com
+			'cookieName'   => false,   // 'custom_cookie_name'
+			'delay'        => false,   // 100
+			'sensitivity'  => false,   // 40
+			'sitewide'     => true,    // true (don't be annoying)
+			'timer'        => false,   // 10
 		);
 		$ouibounce_args	= wp_parse_args( $ouibounce_args, $defaults );
 		foreach ( $ouibounce_args as $key => $value ) {
@@ -465,11 +476,11 @@ final class Wampum_Popups_Setup {
 		}
 		// Output popup with empty span so it forces display
 		$args = array(
-			'aggressive'	=> true,
-			'close_outside'	=> false,
-			'style'			=> 'modal',
-			'type'			=> 'gallery',
-			'width'			=> 'auto',
+			'aggressive'    => true,
+			'close_outside' => false,
+			'style'         => 'modal',
+			'type'          => 'gallery',
+			'width'         => 'auto',
 		);
 		wampum_popup( '', $args );
 	}
@@ -477,9 +488,9 @@ final class Wampum_Popups_Setup {
 	/**
 	 * Add a new hook so devs can safely add a new popup without things breaking if this plugin gets deactivated
 	 *
-	 * @since 	1.1.0
+	 * @since   1.1.0
 	 *
-	 * @return 	null
+	 * @return  null
 	 */
 	function popups_hook() {
 
