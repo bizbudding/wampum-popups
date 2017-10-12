@@ -195,7 +195,7 @@ final class Wampum_Popups_Setup {
 		 * @return  void
 		 */
 		if ( ! class_exists( 'Puc_v4_Factory' ) ) {
-			require_once WAMPUM_FORMS_INCLUDES_DIR . 'vendor/plugin-update-checker/plugin-update-checker.php';
+			require_once WAMPUM_POPUPS_INCLUDES_DIR . 'vendor/plugin-update-checker/plugin-update-checker.php';
 		}
 		$updater = Puc_v4_Factory::buildUpdateChecker( 'https://github.com/bizbudding/wampum-popups/', __FILE__, 'wampum-popups' );
 	}
